@@ -1,0 +1,60 @@
+# Services configuration for environment consolidation
+# This file defines service prefixes and paths for the consolidate-env-files.sh script
+
+# Common infrastructure services (processed first to avoid duplication)
+common_services:
+  - name: postgres
+    env_file: postgres/.env
+    prefix: "POSTGRES_"
+  - name: nats
+    env_file: nats/.env
+    prefix: "NATS_"
+  - name: redis
+    env_file: redis/.env
+    prefix: "REDIS_"
+  - name: traefik
+    env_file: traefik/.env
+    prefix: "TRAEFIK_"
+  # Add Redis or other shared infrastructure as needed
+
+# Services definitions
+# Each entry defines a service-specific .env file
+services:
+  # Application-specific services (common infrastructure services are defined above)
+  - name: lexicon-beneficial-ownership-api
+    env_file: lexicon-beneficial-ownership-api/.env
+    prefix: "BO_API_"
+
+  - name: lexicon-beneficial-ownership
+    env_file: lexicon-beneficial-ownership/.env
+    prefix: "NEXT_PUBLIC_"
+
+  - name: crawler-http-service
+    env_file: crawler-http-service/.env
+    prefix: "CRAWLER_HTTP_"
+
+  - name: indonesia-supreme-court-crawler
+    env_file: indonesia-supreme-court-crawler/.env
+    prefix: "INDONESIA_CRAWLER_"
+
+  - name: singapore-supreme-court-crawler
+    env_file: singapore-supreme-court-crawler/.env
+    prefix: "SINGAPORE_CRAWLER_"
+
+  - name: lexicon-beneficial-ownership-dataminer
+    env_file: lexicon-beneficial-ownership-dataminer/.env
+    prefix: "DATAMINER_"
+
+  - name: lexicon-named-entity-recognition
+    env_file: lexicon-named-entity-recognition/.env
+    prefix: "NER_"
+
+  - name: lexicon-beneficiary-ownership-dashboard
+    env_file: lexicon-beneficiary-ownership-dashboard/.env
+    prefix: "DASHBOARD_"
+
+  - name: indonesia-supreme-court-ai-summarization
+    env_file: indonesia-supreme-court-ai-summarization/.env
+    prefix: "INDONESIA_CRAWLER_AI_SUMMARIZATION_"
+
+  # Add more services here as needed

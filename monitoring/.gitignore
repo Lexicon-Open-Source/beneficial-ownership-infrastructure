@@ -1,0 +1,11 @@
+# Environment variables
+.env
+
+# Local data
+data/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp

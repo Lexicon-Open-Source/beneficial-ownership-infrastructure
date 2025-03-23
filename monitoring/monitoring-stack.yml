@@ -1,0 +1,191 @@
+version: '3.8'
+
+networks:
+  internal_network:
+    driver: overlay
+    attachable: true
+  monitoring_network:
+    driver: overlay
+    attachable: true
+  traefik_network:
+    external: true
+
+volumes:
+  prometheus_data:
+  grafana_data:
+  loki_data:
+  tempo_data:
+  mimir_data:
+
+services:
+  prometheus:
+    image: prom/prometheus:v2.36.2
+    volumes:
+      - prometheus_data:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - internal_network
+      - monitoring_network
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          memory: ${PROMETHEUS_MEMORY_LIMIT}
+          cpus: '${PROMETHEUS_CPU_LIMIT}'
+        reservations:
+          memory: ${PROMETHEUS_MEMORY_RESERVATION}
+          cpus: '${PROMETHEUS_CPU_RESERVATION}'
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:9090/-/healthy"]
+      interval: ${HEALTH_CHECK_INTERVAL}
+      timeout: ${HEALTH_CHECK_TIMEOUT}
+      retries: ${HEALTH_CHECK_RETRIES}
+      start_period: ${HEALTH_CHECK_START_PERIOD}
+
+  grafana:
+    image: grafana/grafana:9.0.3
+    ports:
+      - "${GRAFANA_PORT}:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+    networks:
+      - internal_network
+      - monitoring_network
+      - traefik_network
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          memory: ${GRAFANA_MEMORY_LIMIT}
+          cpus: '${GRAFANA_CPU_LIMIT}'
+        reservations:
+          memory: ${GRAFANA_MEMORY_RESERVATION}
+          cpus: '${GRAFANA_CPU_RESERVATION}'
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.grafana.rule=Host(`${GRAFANA_DOMAIN}`)
+        - traefik.http.services.grafana.loadbalancer.server.port=${GRAFANA_PORT}
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:3000/api/health"]
+      interval: ${HEALTH_CHECK_INTERVAL}
+      timeout: ${HEALTH_CHECK_TIMEOUT}
+      retries: ${HEALTH_CHECK_RETRIES}
+      start_period: ${HEALTH_CHECK_START_PERIOD}
+
+  loki:
+    image: grafana/loki:2.8.0
+    volumes:
+      - loki_data:/loki
+      - ./loki-config.yaml:/etc/loki/local-config.yaml
+    networks:
+      - internal_network
+      - monitoring_network
+    command: ["-config.file=/etc/loki/local-config.yaml"]
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          memory: ${LOKI_MEMORY_LIMIT}
+          cpus: '${LOKI_CPU_LIMIT}'
+        reservations:
+          memory: ${LOKI_MEMORY_RESERVATION}
+          cpus: '${LOKI_CPU_RESERVATION}'
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:3100/ready"]
+      interval: ${HEALTH_CHECK_INTERVAL}
+      timeout: ${HEALTH_CHECK_TIMEOUT}
+      retries: ${HEALTH_CHECK_RETRIES}
+      start_period: ${HEALTH_CHECK_START_PERIOD}
+
+  tempo:
+    image: grafana/tempo:2.1.0
+    volumes:
+      - tempo_data:/tmp/tempo
+      - ./tempo-config.yaml:/etc/tempo/tempo-config.yaml
+    networks:
+      - internal_network
+      - monitoring_network
+    command: ["-config.file=/etc/tempo/tempo-config.yaml"]
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          memory: ${TEMPO_MEMORY_LIMIT}
+          cpus: '${TEMPO_CPU_LIMIT}'
+        reservations:
+          memory: ${TEMPO_MEMORY_RESERVATION}
+          cpus: '${TEMPO_CPU_RESERVATION}'
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:3200/ready"]
+      interval: ${HEALTH_CHECK_INTERVAL}
+      timeout: ${HEALTH_CHECK_TIMEOUT}
+      retries: ${HEALTH_CHECK_RETRIES}
+      start_period: ${HEALTH_CHECK_START_PERIOD}
+
+  mimir:
+    image: grafana/mimir:2.9.0
+    volumes:
+      - mimir_data:/data
+      - ./mimir-config.yaml:/etc/mimir/mimir-config.yaml
+    networks:
+      - internal_network
+      - monitoring_network
+    command: ["-config.file=/etc/mimir/mimir-config.yaml"]
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          memory: ${MIMIR_MEMORY_LIMIT}
+          cpus: '${MIMIR_CPU_LIMIT}'
+        reservations:
+          memory: ${MIMIR_MEMORY_RESERVATION}
+          cpus: '${MIMIR_CPU_RESERVATION}'
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:9009/ready"]
+      interval: ${HEALTH_CHECK_INTERVAL}
+      timeout: ${HEALTH_CHECK_TIMEOUT}
+      retries: ${HEALTH_CHECK_RETRIES}
+      start_period: ${HEALTH_CHECK_START_PERIOD}

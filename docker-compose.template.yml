@@ -137,6 +137,14 @@ services:
             - postgres
             - redis
             - nats
+         labels:
+            - traefik.enable=true
+            - traefik.http.routers.ner.rule=Host(`localhost`) && PathPrefix(`/ner`)
+            - traefik.http.services.ner.loadbalancer.server.port=${NER_PORT}
+            - traefik.http.routers.ner.entrypoints=web
+            - traefik.http.middlewares.ner-stripprefix.stripprefix.prefixes=/ner
+            - traefik.http.middlewares.ner-addprefix.addprefix.prefix=/api
+            - traefik.http.routers.ner.middlewares=ner-stripprefix@docker,ner-addprefix@docker
     lkpp-indonesia-crawler:
         build:
             context: ./lkpp-indonesia-crawler

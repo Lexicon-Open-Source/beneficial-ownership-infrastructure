@@ -256,6 +256,15 @@ services:
             - redis
             - nats
             - traefik
+        labels:
+            - traefik.enable=true
+            - traefik.http.routers.ner.rule=Host(`localhost`) && PathPrefix(`/ner`)
+            - traefik.http.services.ner.loadbalancer.server.port=${NER_PORT}
+            - traefik.http.routers.ner.entrypoints=web
+            - traefik.http.middlewares.ner-stripprefix.stripprefix.prefixes=/ner
+            - traefik.http.middlewares.ner-addprefix.addprefix.prefix=/api
+            - traefik.http.routers.ner.middlewares=ner-stripprefix@docker,ner-addprefix@docker
+
     # lkpp-indonesia-crawler:
     #     build:
     #         context: ./lkpp-indonesia-crawler
@@ -333,7 +342,7 @@ services:
     #         - redis
     #         - nats
     traefik:
-        image: traefik:v2.10
+        image: traefik:v3.3
         environment:
             - HTTP_PORT=${TRAEFIK_HTTP_PORT}
             - HTTPS_PORT=${TRAEFIK_HTTPS_PORT}
@@ -344,20 +353,13 @@ services:
             - ${TRAEFIK_HTTPS_PORT}:${TRAEFIK_HTTPS_PORT}
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
+            - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
         networks:
             - traefik-network
             - app-network
-        command:
-            - --api.insecure=true
-            - --providers.docker=true
-            - --providers.docker.exposedbydefault=false
-            - --entrypoints.websecure.address=:${TRAEFIK_HTTPS_PORT}
-            - --entrypoints.web.address=:${TRAEFIK_HTTP_PORT}
 networks:
     app-network:
-        driver: bridge
     traefik-network:
-        driver: bridge
 volumes:
     postgres-data:
         driver: local

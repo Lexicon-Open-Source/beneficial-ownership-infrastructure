@@ -15,107 +15,86 @@ The infrastructure is defined using Docker Compose and includes the following se
 
 The project uses a centralized environment variable management approach where all variables are defined in a single consolidated `.env` file in this directory. This makes it easier to maintain consistent configuration across all services.
 
-### Environment Management Scripts
+### Environment Management Tools
 
-This project includes several scripts to help manage environment variables:
+This project includes deployment tools to help manage environment variables:
 
-1. **consolidate-env-files.sh**: Consolidates individual service .env files into a single main .env file
-2. **update-docker-compose.sh**: Updates docker-compose.yml to use variables from the consolidated .env file
-3. **run-env-workflow.sh**: Runs the full workflow (consolidate + update + optional start)
+1. **`deployment env`**: Consolidates individual service .env files into a single main .env file
+2. **`deployment update`**: Updates docker-compose.yml to use variables from the consolidated .env file
 
 #### Consolidating Service .env Files
 
 ```bash
 # Basic usage (uses defaults)
-./consolidate-env-files.sh
+deployment env
 
 # Auto-discover services with .env files
-./consolidate-env-files.sh -d
+deployment env -d
 
 # Use a custom configuration
-./consolidate-env-files.sh -c services-config.yaml
+deployment env -c services-config.yaml
 
 # Specify output file
-./consolidate-env-files.sh -o ./custom-env-path
+deployment env -o ./custom-env-path
+
+# Specify a custom directory to discover services
+deployment env -d -dir ./services
 ```
 
 #### YAML Configuration
 
-The script uses a YAML configuration file (`services-config.yaml`) to define services and their prefixes:
+The tool uses a YAML configuration file (`services-config.yaml`) to define services and their prefixes:
 
 ```yaml
-# Service prefixes
-prefixes:
-  postgres: "POSTGRES_"
-  lexicon-beneficial-ownership-api: "BO_API_"
-  # ... other service prefixes
+# Common infrastructure services (processed first to avoid duplication)
+common_services:
+  - name: postgres
+    env_file: postgres/.env
+    prefix: "POSTGRES_"
+  - name: nats
+    env_file: nats/.env
+    prefix: "NATS_"
 
 # Services definitions
 services:
-  - name: postgres
-    env_file: ../postgres/.env
-
   - name: lexicon-beneficial-ownership-api
-    env_file: ../lexicon-beneficial-ownership-api/.env
+    env_file: lexicon-beneficial-ownership-api/.env
+    prefix: "BO_API_"
 
   # ... other services
 ```
 
 This YAML format makes it easy to add, modify, or remove services from the configuration.
 
-#### Full Workflow
+#### Updating Docker Compose
 
-The `run-env-workflow.sh` script automates the entire environment management process:
+The `deployment update` command updates the docker-compose.yml file to use the consolidated environment variables:
 
 ```bash
 # Basic usage
-./run-env-workflow.sh
+deployment update
 
-# Auto-discover services and start containers
-./run-env-workflow.sh -d -s
+# Specify custom paths
+deployment update -env .env -o docker-compose.yml
 
-# Create backups of files before modifying
-./run-env-workflow.sh -b
+# Use a custom template
+deployment update -t docker-compose.template.yml
+
+# Specify a custom directory to discover services
+deployment update -dir ./services
 ```
-
-This workflow script works on both macOS and Linux platforms.
-
-### Consolidated Docker Compose Configuration
-
-Docker Compose has been configured to use only the consolidated `.env` file rather than loading individual service-specific `.env` files. This approach:
-
-1. Reduces complexity and duplication
-2. Makes it easier to see all environment variables in one place
-3. Ensures consistent variable values across services
-4. Simplifies deployment and configuration
-
-Each service in the docker-compose.yml has an `environment` section that maps variables from the consolidated `.env` file to the appropriate service-specific variables using Docker Compose variable substitution. For example:
-
-```yaml
-services:
-  singapore-supreme-court-crawler:
-    # ...
-    environment:
-      - APP_URL=${SINGAPORE_CRAWLER_APP_URL}
-      - LISTEN_HOST=${SINGAPORE_CRAWLER_LISTEN_HOST}
-      - POSTGRES_DB_NAME=${SINGAPORE_CRAWLER_POSTGRES_DB_NAME}
-      # ...
-    env_file:
-      - .env
-```
-
-This approach maintains compatibility with local development while simplifying deployment.
 
 ### Dynamic Service Configuration
 
 Services are defined in a YAML configuration file (`services-config.yaml`):
 
-1. The `prefixes` section maps service names to their environment variable prefixes
-2. The `services` section defines each service with:
+1. The `common_services` section defines shared infrastructure services
+2. The `services` section defines application-specific services with:
    - Service name
    - Path to the service-specific .env file
+   - Environment variable prefix
 
-This makes it easy to add or modify services without changing the core logic of the scripts.
+Each service in the docker-compose.yml has its environment variables configured to reference the consolidated .env file.
 
 ### Adding a New Service
 
@@ -124,55 +103,50 @@ To add a new service to the environment variable system:
 1. Create a service-specific .env file with the necessary variables
 2. Add the service to the `services-config.yaml` file (if not using auto-discovery):
    ```yaml
-   # Add prefix to the prefixes section
-   prefixes:
-     # ... existing prefixes
-     new-service: "NEW_SERVICE_"
-
    # Add service to the services section
    services:
      # ... existing services
      - name: new-service
-       env_file: ../new-service/.env
+       env_file: new-service/.env
+       prefix: "NEW_SERVICE_"
    ```
-3. Run the consolidation workflow to update the main .env file
-4. Add the service to `docker-compose.yml` with appropriate environment mappings:
-   ```yaml
-   service-name:
-     # ...
-     environment:
-       - TARGET_VAR1=${NEW_SERVICE_VAR1}
-       - TARGET_VAR2=${NEW_SERVICE_VAR2}
-     env_file:
-       - .env
-   ```
-
-### Adding or Modifying Environment Variables
-
-When you need to add or modify environment variables:
-
-1. Edit the service-specific .env file
-2. Run the consolidation workflow to update the main .env file:
+3. Run the consolidation command to update the main .env file:
    ```bash
-   ./run-env-workflow.sh -d
+   deployment env
    ```
-
-3. Or simply restart the entire stack with:
+4. Update docker-compose.yml to include the new service:
    ```bash
-   ./run-env-workflow.sh -d -s
+   deployment update
    ```
 
-## Environment Configuration
+### Customizing Service Discovery
+
+The deployment tools support customizing where to look for services:
+
+1. Using the `-dir` parameter to specify a custom directory:
+   ```bash
+   # Look for services in the ./services directory
+   deployment env -d -dir ./services
+
+   # Update docker-compose using services in the ./services directory
+   deployment update -dir ./services
+   ```
+
+2. This is useful when:
+   - Your services are organized in a different directory structure
+   - You have multiple environments with services in different locations
+   - You want to generate configurations for a subset of services
+
+### Environment Configuration
 
 This project uses a YAML configuration file for managing environment variables across multiple services.
 
 ### Configuration File
 
-The environment configuration is managed in `services-config.yaml`, which contains three main sections:
+The environment configuration is managed in `services-config.yaml`, which contains two main sections:
 
 1. `common_services`: Infrastructure services with shared environment variables (processed first)
-2. `prefixes`: Maps service names to their environment variable prefixes
-3. `services`: Defines application-specific services with their name and path to the `.env` file
+2. `services`: Defines application-specific services with their name, env_file path, and prefix
 
 Example configuration:
 
@@ -180,104 +154,117 @@ Example configuration:
 # Common infrastructure services (processed first to avoid duplication)
 common_services:
   - name: postgres
-    env_file: ./postgres/.env
+    env_file: postgres/.env
     prefix: "POSTGRES_"
   - name: nats
-    env_file: ./nats/.env
+    env_file: nats/.env
     prefix: "NATS_"
-
-# Service prefixes
-prefixes:
-  postgres: "POSTGRES_"
-  nats: "NATS_"
-  lexicon-beneficial-ownership-api: "BO_API_"
 
 # Application services
 services:
   - name: lexicon-beneficial-ownership-api
-    env_file: ../lexicon-beneficial-ownership-api/.env
+    env_file: lexicon-beneficial-ownership-api/.env
+    prefix: "BO_API_"
 ```
 
 The `common_services` section is processed first, ensuring that shared infrastructure variables (like database credentials) aren't duplicated when multiple services reference them.
 
-### Running the Environment Consolidation Workflow
+### Running the Environment Consolidation Command
 
-The environment consolidation workflow combines individual service `.env` files into a single `.env` file with appropriate prefixes.
+The environment consolidation command combines individual service `.env` files into a single `.env` file with appropriate prefixes.
 
-To run the workflow:
+To run the command:
 
 ```bash
 cd lexicon-beneficial-ownership-infra
-./run-env-workflow.sh
+deployment env
 ```
 
-The `consolidate-env-files.sh` script provides several options:
+The `deployment env` command provides several options:
 
-```bash
-./consolidate-env-files.sh [OPTIONS]
-
+```
 Options:
-  -h, --help              Display help message
-  -o, --output <path>     Specify output file path (default: ./.env)
-  -f, --force             Overwrite existing output file without prompting
-  -c, --config <path>     Specify services configuration file path (YAML)
-  -d, --discover          Auto-discover services by scanning directories
+  -o string   Output file path for consolidated env file (default: .env)
+  -f          Force overwrite output file if it exists
+  -c string   Path to services configuration file (default: services-config.yaml)
+  -d          Auto-discover services in project directory
+  -dir string Directory to discover services (default: current directory)
+                Use this to specify a different directory for service discovery
 ```
 
 Examples:
 
 ```bash
-# Use default settings (recommended)
-./consolidate-env-files.sh
+# Use default settings
+deployment env
 
 # Force overwrite existing .env file
-./consolidate-env-files.sh --force
+deployment env -f
 
 # Specify a different output location
-./consolidate-env-files.sh --output /path/to/output/.env
+deployment env -o /path/to/output/.env
 
 # Use a different configuration file
-./consolidate-env-files.sh --config ./my-custom-config.yaml
+deployment env -c ./my-custom-config.yaml
 
-# Auto-discover services instead of using the config file
-./consolidate-env-files.sh --discover
+# Auto-discover services in a specific directory
+deployment env -d -dir ./services
 ```
 
-The script will combine all service `.env` files, prefixing variables according to the configuration.
+### Updating Docker Compose Configuration
+
+To update Docker Compose to use the consolidated environment variables:
+
+```bash
+deployment update
+```
+
+The `deployment update` command provides several options:
+
+```
+Options:
+  -t string     Path to template file (default: docker-compose.template.yml in project root)
+  -env string   Path to consolidated env file (default: .env)
+  -o string     Output file path (default: docker-compose.yml in project root)
+  -f            Force overwrite output file if it exists
+  -dir string   Directory to discover services (default: current directory)
+  -c string     Path to services configuration file (default: services-config.yaml)
+```
+
+Examples:
+
+```bash
+# Use default settings
+deployment update
+
+# Specify custom input and output files
+deployment update -t my-template.yml -env ./my-env-file -o ./my-docker-compose.yml
+
+# Auto-discover services in a specific directory
+deployment update -dir ./services
+```
 
 ### Adding a New Service
 
-To add a new service:
+To add a new service to the environment variable system:
 
-1. Add the service prefix to the `prefixes` section of `services-config.yaml`:
+1. Create a service-specific .env file with the necessary variables
+2. Add the service to the `services-config.yaml` file (if not using auto-discovery):
    ```yaml
-   prefixes:
-     existing-service: "EXISTING_"
-     new-service: "NEW_SERVICE_"
-   ```
-
-2. Add the service definition to the `services` section of `services-config.yaml`:
-   ```yaml
+   # Add service to the services section
    services:
-     - name: existing-service
-       env_file: ../existing-service/.env
+     # ... existing services
      - name: new-service
-       env_file: ../new-service/.env
+       env_file: new-service/.env
+       prefix: "NEW_SERVICE_"
    ```
-
-3. Run the consolidation workflow to update the main `.env` file:
+3. Run the consolidation command to update the main .env file:
    ```bash
-   ./run-env-workflow.sh
+   deployment env
    ```
-
-4. Add the service to `docker-compose.yml` with appropriate environment mappings:
-   ```yaml
-   services:
-     new-service:
-       image: new-service-image
-       environment:
-         - NEW_SERVICE_API_KEY=${NEW_SERVICE_API_KEY}
-         - NEW_SERVICE_DB_URL=${NEW_SERVICE_DB_URL}
+4. Update docker-compose.yml to include the new service:
+   ```bash
+   deployment update
    ```
 
 ## Getting Started

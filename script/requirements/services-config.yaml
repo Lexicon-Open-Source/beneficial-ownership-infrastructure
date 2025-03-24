@@ -28,7 +28,7 @@ services:
 
   - name: lexicon-beneficial-ownership
     env_file: lexicon-beneficial-ownership/.env
-    prefix: "FRONTEND_"
+    prefix: "NEXT_PUBLIC_"
     domain: "beneficial-ownership.lexicon.id"
 
   - name: crawler-http-service

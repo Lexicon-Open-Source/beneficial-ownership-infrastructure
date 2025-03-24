@@ -1,0 +1,234 @@
+services:
+    crawler-http-service:
+        build:
+            context: ./crawler-http-service
+            dockerfile: dev.Dockerfile
+
+        environment:
+        - ""
+        labels:
+            - traefik.enable=true
+            - traefik.http.routers.crawler-http-service.rule=Host(`localhost`) && PathPrefix(`/crawler/api`)
+            - traefik.http.services.crawler-http-service.loadbalancer.server.port=${CRAWLER_HTTP_PORT}
+        volumes:
+            - ./crawler-http-service:/app
+        networks:
+            - traefik-network
+            - app-network
+        depends_on:
+            - postgres
+            - redis
+            - nats
+    indonesia-supreme-court-ai-summarization:
+        build:
+            context: ./indonesia-supreme-court-ai-summarization
+            dockerfile: dev.Dockerfile
+
+        environment:
+            - ""
+        volumes:
+            - ./indonesia-supreme-court-ai-summarization:/app
+        networks:
+            - app-network
+        depends_on:
+            - postgres
+            - redis
+            - nats
+    indonesia-supreme-court-crawler:
+        build:
+            context: ./indonesia-supreme-court-crawler
+            dockerfile: dev.Dockerfile
+
+        environment:
+            - ""
+        volumes:
+            - ./indonesia-supreme-court-crawler:/app
+        networks:
+            - app-network
+        depends_on:
+            - postgres
+            - redis
+            - nats
+    lexicon-beneficial-ownership:
+        build:
+            context: ./lexicon-beneficial-ownership
+            dockerfile: dev.Dockerfile
+
+        environment:
+            - ""
+        labels:
+            - traefik.enable=true
+            - traefik.http.routers.beneficial-ownership-frontend.rule=Host(`localhost`)
+            - traefik.http.services.beneficial-ownership-frontend.loadbalancer.server.port=${NEXT_PUBLIC_PORT}
+        volumes:
+            - ./lexicon-beneficial-ownership:/app
+        networks:
+            - traefik-network
+            - app-network
+        depends_on:
+            - postgres
+            - redis
+            - nats
+    lexicon-beneficial-ownership-api:
+        build:
+            context: ./lexicon-beneficial-ownership-api
+            dockerfile: dev.Dockerfile
+
+        environment:
+            - ""
+        labels:
+            - traefik.enable=true
+            - traefik.http.routers.beneficial-ownership-api.rule=Host(`localhost`) && PathPrefix(`/api`)
+            - traefik.http.services.beneficial-ownership-api.loadbalancer.server.port=${BO_API_PORT}
+        volumes:
+            - ./lexicon-beneficial-ownership-api:/app
+        networks:
+            - traefik-network
+            - app-network
+        depends_on:
+            - postgres
+            - redis
+            - nats
+    lexicon-beneficial-ownership-dataminer:
+        build:
+            context: ./lexicon-beneficial-ownership-dataminer
+            dockerfile: dev.Dockerfile
+
+        environment:
+            - ""
+        volumes:
+            - ./lexicon-beneficial-ownership-dataminer:/app
+        networks:
+            - app-network
+        depends_on:
+            - postgres
+            - redis
+            - nats
+    lexicon-beneficiary-ownership-dashboard:
+        build:
+            context: ./lexicon-beneficiary-ownership-dashboard
+            dockerfile: dev.Dockerfile
+
+        environment:
+            - ""
+        labels:
+            - traefik.enable=true
+            - traefik.http.routers.admin-dashboard.rule=Host(`localhost`) && PathPrefix(`/admin`)
+            - traefik.http.services.admin-dashboard.loadbalancer.server.port=${DASHBOARD_APP_PORT}
+        volumes:
+            - ./lexicon-beneficiary-ownership-dashboard:/app
+        networks:
+            - traefik-network
+            - app-network
+        depends_on:
+            - postgres
+            - redis
+            - nats
+    lexicon-named-entity-recognition:
+        build:
+            context: ./lexicon-named-entity-recognition
+            dockerfile: dev.Dockerfile
+
+        environment:
+            - ""
+        volumes:
+            - ./lexicon-named-entity-recognition:/app
+        networks:
+            - app-network
+        depends_on:
+            - postgres
+            - redis
+            - nats
+    lkpp-indonesia-crawler:
+        build:
+            context: ./lkpp-indonesia-crawler
+            dockerfile: dev.Dockerfile
+
+        volumes:
+            - ./lkpp-indonesia-crawler:/app
+        networks:
+            - app-network
+        depends_on:
+            - postgres
+            - redis
+            - nats
+    nats:
+        image: nats:2.9.6
+
+        environment:
+            - ""
+        ports:
+            - ""
+        networks:
+            - app-network
+        command: --jetstream --user ${NATS_USER} --pass ${NATS_PASSWORD}
+    postgres:
+        image: postgres:15
+
+        environment:
+            - ""
+        ports:
+            - ""
+        volumes:
+            - postgres-data:/var/lib/postgresql/data
+        networks:
+            - app-network
+
+
+    redis:
+        image: eqalpha/keydb:alpine_x86_64_v6.3.4
+        environment:
+            - ""
+        ports:
+            - ""
+        networks:
+            - app-network
+        volumes:
+            - redis-data:/var/lib/keydb
+            - ./redis/redis.conf:/etc/keydb/redis.conf
+
+        command: keydb-server /etc/keydb/redis.conf --requirepass ${REDIS_PASSWORD}
+
+    singapore-supreme-court-crawler:
+        build:
+            context: ./singapore-supreme-court-crawler
+            dockerfile: dev.Dockerfile
+
+        environment:
+            - ""
+        volumes:
+            - ./singapore-supreme-court-crawler:/app
+        networks:
+            - app-network
+        depends_on:
+            - postgres
+            - redis
+            - nats
+    traefik:
+        image: traefik:v2.10
+
+        environment:
+            - ""
+        ports:
+            - ""
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        networks:
+            - traefik-network
+            - app-network
+        command:
+            - --api.insecure=true
+            - --providers.docker=true
+            - --providers.docker.exposedbydefault=false
+            - --entrypoints.websecure.address=:${TRAEFIK_HTTPS_PORT}
+            - --entrypoints.web.address=:${TRAEFIK_HTTP_PORT}
+networks:
+    app-network:
+        driver: bridge
+    traefik-network:
+        driver: bridge
+volumes:
+    postgres-data:
+        driver: local
+    redis-data:
+        driver: local

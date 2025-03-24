@@ -1,0 +1,366 @@
+services:
+    crawler-http-service:
+        build:
+            context: ./crawler-http-service
+            dockerfile: dev.Dockerfile
+        environment:
+            - NATS_PASSWORD=${CRAWLER_HTTP_NATS_PASSWORD}
+            - PORT=${CRAWLER_HTTP_PORT}
+            - NATS_PORT=${CRAWLER_HTTP_NATS_PORT}
+            - HOST=${CRAWLER_HTTP_HOST}
+            - POSTGRES_PORT=${CRAWLER_HTTP_POSTGRES_PORT}
+            - POSTGRES_ROOT_PASSWORD=${CRAWLER_HTTP_POSTGRES_ROOT_PASSWORD}
+            - API_KEY=${CRAWLER_HTTP_API_KEY}
+            - SALT=${CRAWLER_HTTP_SALT}
+            - NATS_HOST=${CRAWLER_HTTP_NATS_HOST}
+            - URL=${CRAWLER_HTTP_URL}
+            - ENV=${CRAWLER_HTTP_ENV}
+            - POSTGRES_HOST=${CRAWLER_HTTP_POSTGRES_HOST}
+            - POSTGRES_USERNAME=${CRAWLER_HTTP_POSTGRES_USERNAME}
+            - POSTGRES_PASSWORD=${CRAWLER_HTTP_POSTGRES_PASSWORD}
+            - POSTGRES_SSLMODE=${CRAWLER_HTTP_POSTGRES_SSLMODE}
+            - POSTGRES_DB_NAME=${CRAWLER_HTTP_POSTGRES_DB_NAME}
+            - NATS_USERNAME=${CRAWLER_HTTP_NATS_USERNAME}
+        ports:
+            - ${CRAWLER_HTTP_PORT}:${CRAWLER_HTTP_PORT}
+        labels:
+            - traefik.enable=true
+            - traefik.http.routers.crawler-http-service.rule=Host(`localhost`) && PathPrefix(`/crawler/api`)
+            - traefik.http.services.crawler-http-service.loadbalancer.server.port=${CRAWLER_HTTP_LISTEN_PORT}
+        volumes:
+            - ./crawler-http-service:/app
+        networks:
+            - traefik-network
+            - app-network
+        depends_on:
+            - postgres
+            - redis
+            - nats
+    indonesia-supreme-court-ai-summarization:
+        build:
+            context: ./indonesia-supreme-court-ai-summarization
+            dockerfile: dev.Dockerfile
+        environment:
+            - OPENAI_API_KEY=${INDONESIA_CRAWLER_AI_SUMMARIZATION_OPENAI_API_KEY}
+            - DB_ADDR=${INDONESIA_CRAWLER_AI_SUMMARIZATION_DB_ADDR}
+            - DB_USER=${INDONESIA_CRAWLER_AI_SUMMARIZATION_DB_USER}
+            - DB_PASS=${INDONESIA_CRAWLER_AI_SUMMARIZATION_DB_PASS}
+            - NATS__URL=${INDONESIA_CRAWLER_AI_SUMMARIZATION_NATS__URL}
+        volumes:
+            - ./indonesia-supreme-court-ai-summarization:/app
+        networks:
+            - app-network
+        depends_on:
+            - postgres
+            - redis
+            - nats
+    indonesia-supreme-court-crawler:
+        build:
+            context: ./indonesia-supreme-court-crawler
+            dockerfile: dev.Dockerfile
+        environment:
+            - POSTGRES_HOST=${INDONESIA_CRAWLER_POSTGRES_HOST}
+            - POSTGRES_DB_NAME=${INDONESIA_CRAWLER_POSTGRES_DB_NAME}
+            - POSTGRES_USERNAME=${INDONESIA_CRAWLER_POSTGRES_USERNAME}
+            - POSTGRES_PASSWORD=${INDONESIA_CRAWLER_POSTGRES_PASSWORD}
+            - POSTGRES_ROOT_PASSWORD=${INDONESIA_CRAWLER_POSTGRES_ROOT_PASSWORD}
+            - GOOGLE_APPLICATION_CREDENTIALS=${INDONESIA_CRAWLER_GOOGLE_APPLICATION_CREDENTIALS}
+            - POSTGRES_PORT=${INDONESIA_CRAWLER_POSTGRES_PORT}
+            - POSTGRES_SSLMODE=${INDONESIA_CRAWLER_POSTGRES_SSLMODE}
+            - GCS_BUCKET_NAME=${INDONESIA_CRAWLER_GCS_BUCKET_NAME}
+        volumes:
+            - ./indonesia-supreme-court-crawler:/app
+        networks:
+            - app-network
+        depends_on:
+            - postgres
+            - redis
+            - nats
+    lexicon-beneficial-ownership:
+        build:
+            context: ./lexicon-beneficial-ownership
+            dockerfile: dev.Dockerfile
+        environment:
+            - NEXT_PUBLIC_API_KEY=${NEXT_PUBLIC_API_KEY}
+            - NEXT_PUBLIC_SALT=${NEXT_PUBLIC_SALT}
+            - PORT=${NEXT_PUBLIC_PORT}
+            - LOG_LEVEL=${NEXT_PUBLIC_LOG_LEVEL}
+        ports:
+            - ${NEXT_PUBLIC_PORT}:${NEXT_PUBLIC_PORT}
+        labels:
+            - traefik.enable=true
+            - traefik.http.routers.beneficial-ownership-frontend.rule=Host(`localhost`)
+            - traefik.http.services.beneficial-ownership-frontend.loadbalancer.server.port=${NEXT_PUBLIC_PORT}
+        volumes:
+            - ./lexicon-beneficial-ownership:/app
+        networks:
+            - traefik-network
+            - app-network
+        depends_on:
+            - postgres
+            - redis
+            - nats
+    lexicon-beneficial-ownership-api:
+        build:
+            context: ./lexicon-beneficial-ownership-api
+            dockerfile: dev.Dockerfile
+        environment:
+            - POSTGRES_USERNAME=${BO_API_POSTGRES_USERNAME}
+            - REDIS_HOST=${BO_API_REDIS_HOST}
+            - REDIS_PORT=${BO_API_REDIS_PORT}
+            - SALT=${BO_API_SALT}
+            - URL=${BO_API_URL}
+            - PORT=${BO_API_PORT}
+            - POSTGRES_HOST=${BO_API_POSTGRES_HOST}
+            - POSTGRES_PORT=${BO_API_POSTGRES_PORT}
+            - POSTGRES_DB_NAME=${BO_API_POSTGRES_DB_NAME}
+            - POSTGRES_PASSWORD=${BO_API_POSTGRES_PASSWORD}
+            - REDIS_PASSWORD=${BO_API_REDIS_PASSWORD}
+            - API_KEY=${BO_API_API_KEY}
+            - HOST=${BO_API_HOST}
+        ports:
+            - ${BO_API_PORT}:${BO_API_PORT}
+        labels:
+            - traefik.enable=true
+            - traefik.http.routers.beneficial-ownership-api.rule=Host(`localhost`) && PathPrefix(`/api`)
+            - traefik.http.services.beneficial-ownership-api.loadbalancer.server.port=${BO_API_APP_LISTEN_PORT}
+        volumes:
+            - ./lexicon-beneficial-ownership-api:/app
+        networks:
+            - traefik-network
+            - app-network
+        depends_on:
+            - postgres
+            - redis
+            - nats
+    lexicon-beneficial-ownership-dataminer:
+        build:
+            context: ./lexicon-beneficial-ownership-dataminer
+            dockerfile: dev.Dockerfile
+        environment:
+            - POSTGRES_USERNAME=${DATAMINER_POSTGRES_USERNAME}
+            - POSTGRES_PASSWORD=${DATAMINER_POSTGRES_PASSWORD}
+            - POSTGRES_ROOT_PASSWORD=${DATAMINER_POSTGRES_ROOT_PASSWORD}
+            - POSTGRES_SSLMODE=${DATAMINER_POSTGRES_SSLMODE}
+            - POSTGRES_CRAWLER_DB_NAME=${DATAMINER_POSTGRES_CRAWLER_DB_NAME}
+            - POSTGRES_BO_DB_NAME=${DATAMINER_POSTGRES_BO_DB_NAME}
+            - POSTGRES_HOST=${DATAMINER_POSTGRES_HOST}
+            - POSTGRES_PORT=${DATAMINER_POSTGRES_PORT}
+        volumes:
+            - ./lexicon-beneficial-ownership-dataminer:/app
+        networks:
+            - app-network
+        depends_on:
+            - postgres
+            - redis
+            - nats
+    lexicon-beneficiary-ownership-dashboard:
+        build:
+            context: ./lexicon-beneficiary-ownership-dashboard
+            dockerfile: dev.Dockerfile
+        environment:
+            - DB_CONNECTION=${DASHBOARD_DB_CONNECTION}
+            - MEMCACHED_HOST=${DASHBOARD_MEMCACHED_HOST}
+            - APP_TIMEZONE=${DASHBOARD_APP_TIMEZONE}
+            - LOG_DEPRECATIONS_CHANNEL=${DASHBOARD_LOG_DEPRECATIONS_CHANNEL}
+            - REDIS_PASSWORD=${DASHBOARD_REDIS_PASSWORD}
+            - MAIL_ENCRYPTION=${DASHBOARD_MAIL_ENCRYPTION}
+            - AWS_SECRET_ACCESS_KEY=${DASHBOARD_AWS_SECRET_ACCESS_KEY}
+            - AWS_DEFAULT_REGION=${DASHBOARD_AWS_DEFAULT_REGION}
+            - SESSION_DRIVER=${DASHBOARD_SESSION_DRIVER}
+            - APP_MAINTENANCE_DRIVER=${DASHBOARD_APP_MAINTENANCE_DRIVER}
+            - BCRYPT_ROUNDS=${DASHBOARD_BCRYPT_ROUNDS}
+            - REDIS_CLIENT=${DASHBOARD_REDIS_CLIENT}
+            - ELASTIC_SEARCH_USER=${DASHBOARD_ELASTIC_SEARCH_USER}
+            - MAIL_HOST=${DASHBOARD_MAIL_HOST}
+            - MAIL_USERNAME=${DASHBOARD_MAIL_USERNAME}
+            - APP_LOCALE=${DASHBOARD_APP_LOCALE}
+            - DB_DATABASE=${DASHBOARD_DB_DATABASE}
+            - ELASTIC_SEARCH_TRANSPORT_PORT=${DASHBOARD_ELASTIC_SEARCH_TRANSPORT_PORT}
+            - ELASTIC_SEARCH_SCHEME=${DASHBOARD_ELASTIC_SEARCH_SCHEME}
+            - SESSION_LIFETIME=${DASHBOARD_SESSION_LIFETIME}
+            - MAIL_FROM_NAME=${DASHBOARD_MAIL_FROM_NAME}
+            - APP_NAME=${DASHBOARD_APP_NAME}
+            - APP_PORT=${DASHBOARD_APP_PORT}
+            - LOG_STACK=${DASHBOARD_LOG_STACK}
+            - CACHE_PREFIX=${DASHBOARD_CACHE_PREFIX}
+            - REDIS_HOST=${DASHBOARD_REDIS_HOST}
+            - MAIL_PASSWORD=${DASHBOARD_MAIL_PASSWORD}
+            - VITE_APP_NAME=${DASHBOARD_VITE_APP_NAME}
+            - ELASTIC_SEARCH_API_PORT=${DASHBOARD_ELASTIC_SEARCH_API_PORT}
+            - DB_HOST=${DASHBOARD_DB_HOST}
+            - MAIL_PORT=${DASHBOARD_MAIL_PORT}
+            - AWS_BUCKET=${DASHBOARD_AWS_BUCKET}
+            - SESSION_PATH=${DASHBOARD_SESSION_PATH}
+            - MAIL_FROM_ADDRESS=${DASHBOARD_MAIL_FROM_ADDRESS}
+            - DB_PASSWORD=${DASHBOARD_DB_PASSWORD}
+            - SESSION_DOMAIN=${DASHBOARD_SESSION_DOMAIN}
+            - APP_DEBUG=${DASHBOARD_APP_DEBUG}
+            - DB_PORT=${DASHBOARD_DB_PORT}
+            - APP_ENV=${DASHBOARD_APP_ENV}
+            - APP_FALLBACK_LOCALE=${DASHBOARD_APP_FALLBACK_LOCALE}
+            - SESSION_ENCRYPT=${DASHBOARD_SESSION_ENCRYPT}
+            - QUEUE_CONNECTION=${DASHBOARD_QUEUE_CONNECTION}
+            - LOG_CHANNEL=${DASHBOARD_LOG_CHANNEL}
+            - APP_URL=${DASHBOARD_APP_URL}
+            - APP_FAKER_LOCALE=${DASHBOARD_APP_FAKER_LOCALE}
+            - CACHE_STORE=${DASHBOARD_CACHE_STORE}
+            - ELASTIC_SEARCH_HOST=${DASHBOARD_ELASTIC_SEARCH_HOST}
+            - ELASTIC_SEARCH_PASS=${DASHBOARD_ELASTIC_SEARCH_PASS}
+            - MAIL_MAILER=${DASHBOARD_MAIL_MAILER}
+            - AWS_ACCESS_KEY_ID=${DASHBOARD_AWS_ACCESS_KEY_ID}
+            - LOG_LEVEL=${DASHBOARD_LOG_LEVEL}
+            - BROADCAST_CONNECTION=${DASHBOARD_BROADCAST_CONNECTION}
+            - FILESYSTEM_DISK=${DASHBOARD_FILESYSTEM_DISK}
+            - APP_KEY=${DASHBOARD_APP_KEY}
+            - REDIS_PORT=${DASHBOARD_REDIS_PORT}
+            - APP_MAINTENANCE_STORE=${DASHBOARD_APP_MAINTENANCE_STORE}
+            - DB_USERNAME=${DASHBOARD_DB_USERNAME}
+            - AWS_USE_PATH_STYLE_ENDPOINT=${DASHBOARD_AWS_USE_PATH_STYLE_ENDPOINT}
+        ports:
+            - ${DASHBOARD_APP_PORT}:${DASHBOARD_APP_PORT}
+        labels:
+            - traefik.enable=true
+            - traefik.http.routers.admin-dashboard.rule=Host(`localhost`) && PathPrefix(`/admin`)
+            - traefik.http.services.admin-dashboard.loadbalancer.server.port=${DASHBOARD_APP_PORT}
+        volumes:
+            - ./lexicon-beneficiary-ownership-dashboard:/app
+        networks:
+            - traefik-network
+            - app-network
+        depends_on:
+            - postgres
+            - redis
+            - nats
+    lexicon-named-entity-recognition:
+        build:
+            context: ./lexicon-named-entity-recognition
+            dockerfile: dev.Dockerfile
+        environment:
+            - OPENAI_MODEL=${NER_OPENAI_MODEL}
+            - OPENAI_MAX_TOKENS=${NER_OPENAI_MAX_TOKENS}
+            - MAX_BATCH_SIZE=${NER_MAX_BATCH_SIZE}
+            - PORT=${NER_PORT}
+            - LOG_LEVEL=${NER_LOG_LEVEL}
+            - API_KEY=${NER_API_KEY}
+            - REQUIRE_API_KEY=${NER_REQUIRE_API_KEY}
+            - OPENAI_TEMPERATURE=${NER_OPENAI_TEMPERATURE}
+            - CACHE_SIZE=${NER_CACHE_SIZE}
+            - OPENAI_API_KEY=${NER_OPENAI_API_KEY}
+        ports:
+            - ${NER_PORT}:${NER_PORT}
+        volumes:
+            - ./lexicon-named-entity-recognition:/app
+        networks:
+            - app-network
+        depends_on:
+            - postgres
+            - redis
+            - nats
+    lkpp-indonesia-crawler:
+        build:
+            context: ./lkpp-indonesia-crawler
+            dockerfile: dev.Dockerfile
+        volumes:
+            - ./lkpp-indonesia-crawler:/app
+        networks:
+            - app-network
+        depends_on:
+            - postgres
+            - redis
+            - nats
+    nats:
+        image: nats:2.9.6
+        environment:
+            - PASSWORD=${NATS_PASSWORD}
+            - JETSTREAM_ENABLED=${NATS_JETSTREAM_ENABLED}
+            - PORT_MONITORING=${NATS_PORT_MONITORING}
+            - HOST=${NATS_HOST}
+            - PORT=${NATS_PORT}
+            - USER=${NATS_USER}
+        ports:
+            - ${NATS_PORT}:${NATS_PORT}
+            - ${NATS_PORT_MONITORING}:${NATS_PORT_MONITORING}
+        networks:
+            - app-network
+        command: --jetstream --user ${NATS_USER} --pass ${NATS_PASSWORD}
+    postgres:
+        image: postgres:15
+        environment:
+            - POSTGRES_BO_DB_NAME=${POSTGRES_BO_DB_NAME}
+            - POSTGRES_USERNAME=${POSTGRES_USERNAME}
+            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+            - POSTGRES_HOST=${POSTGRES_HOST}
+            - POSTGRES_PORT=${POSTGRES_PORT}
+            - POSTGRES_CRAWLER_DB_NAME=${POSTGRES_CRAWLER_DB_NAME}
+        ports:
+            - ${POSTGRES_PORT}:${POSTGRES_PORT}
+        volumes:
+            - postgres-data:/var/lib/postgresql/data
+        networks:
+            - app-network
+    redis:
+        image: eqalpha/keydb:alpine_x86_64_v6.3.4
+        environment:
+            - PASSWORD=${REDIS_PASSWORD}
+            - PORT=${REDIS_PORT}
+            - HOST=${REDIS_HOST}
+        ports:
+            - ${REDIS_PORT}:${REDIS_PORT}
+        volumes:
+            - redis-data:/var/lib/keydb
+            - ./redis/redis.conf:/etc/keydb/redis.conf
+        networks:
+            - app-network
+        command: keydb-server /etc/keydb/redis.conf --requirepass ${REDIS_PASSWORD}
+    singapore-supreme-court-crawler:
+        build:
+            context: ./singapore-supreme-court-crawler
+            dockerfile: dev.Dockerfile
+        environment:
+            - POSTGRES_USERNAME=${SINGAPORE_CRAWLER_POSTGRES_USERNAME}
+            - POSTGRES_PASSWORD=${SINGAPORE_CRAWLER_POSTGRES_PASSWORD}
+            - GOOGLE_APPLICATION_CREDENTIALS=${SINGAPORE_CRAWLER_GOOGLE_APPLICATION_CREDENTIALS}
+            - GCS_BUCKET_NAME=${SINGAPORE_CRAWLER_GCS_BUCKET_NAME}
+            - POSTGRES_HOST=${SINGAPORE_CRAWLER_POSTGRES_HOST}
+            - POSTGRES_PORT=${SINGAPORE_CRAWLER_POSTGRES_PORT}
+            - POSTGRES_DB_NAME=${SINGAPORE_CRAWLER_POSTGRES_DB_NAME}
+        volumes:
+            - ./singapore-supreme-court-crawler:/app
+        networks:
+            - app-network
+        depends_on:
+            - postgres
+            - redis
+            - nats
+    traefik:
+        image: traefik:v2.10
+        environment:
+            - HTTP_PORT=${TRAEFIK_HTTP_PORT}
+            - HTTPS_PORT=${TRAEFIK_HTTPS_PORT}
+            - DASHBOARD_PORT=${TRAEFIK_DASHBOARD_PORT}
+        ports:
+            - ${TRAEFIK_DASHBOARD_PORT}:${TRAEFIK_DASHBOARD_PORT}
+            - ${TRAEFIK_HTTPS_PORT}:${TRAEFIK_HTTPS_PORT}
+            - ${TRAEFIK_HTTP_PORT}:${TRAEFIK_HTTP_PORT}
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        networks:
+            - traefik-network
+            - app-network
+        command:
+            - --api.insecure=true
+            - --providers.docker=true
+            - --providers.docker.exposedbydefault=false
+            - --entrypoints.websecure.address=:${TRAEFIK_HTTPS_PORT}
+            - --entrypoints.web.address=:${TRAEFIK_HTTP_PORT}
+networks:
+    app-network:
+        driver: bridge
+    traefik-network:
+        driver: bridge
+volumes:
+    postgres-data:
+        driver: local
+    redis-data:
+        driver: local

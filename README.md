@@ -5,6 +5,7 @@ This repository contains the infrastructure configuration for the Lexicon Benefi
 ## Overview
 
 The infrastructure is defined using Docker Compose and includes the following services:
+
 - Traefik (reverse proxy)
 - PostgreSQL (database)
 - NATS (messaging)
@@ -102,6 +103,7 @@ To add a new service to the environment variable system:
 
 1. Create a service-specific .env file with the necessary variables
 2. Add the service to the `services-config.yaml` file (if not using auto-discovery):
+
    ```yaml
    # Add service to the services section
    services:
@@ -110,11 +112,15 @@ To add a new service to the environment variable system:
        env_file: new-service/.env
        prefix: "NEW_SERVICE_"
    ```
+
 3. Run the consolidation command to update the main .env file:
+
    ```bash
    deployment env
    ```
+
 4. Update docker-compose.yml to include the new service:
+
    ```bash
    deployment update
    ```
@@ -124,6 +130,7 @@ To add a new service to the environment variable system:
 The deployment tools support customizing where to look for services:
 
 1. Using the `-dir` parameter to specify a custom directory:
+
    ```bash
    # Look for services in the ./services directory
    deployment env -d -dir ./services
@@ -182,7 +189,7 @@ deployment env
 
 The `deployment env` command provides several options:
 
-```
+```sh
 Options:
   -o string   Output file path for consolidated env file (default: .env)
   -f          Force overwrite output file if it exists
@@ -221,7 +228,7 @@ deployment update
 
 The `deployment update` command provides several options:
 
-```
+```sh
 Options:
   -t string     Path to template file (default: docker-compose.template.yml in project root)
   -env string   Path to consolidated env file (default: .env)
@@ -244,37 +251,22 @@ deployment update -t my-template.yml -env ./my-env-file -o ./my-docker-compose.y
 deployment update -dir ./services
 ```
 
-### Adding a New Service
-
-To add a new service to the environment variable system:
-
-1. Create a service-specific .env file with the necessary variables
-2. Add the service to the `services-config.yaml` file (if not using auto-discovery):
-   ```yaml
-   # Add service to the services section
-   services:
-     # ... existing services
-     - name: new-service
-       env_file: new-service/.env
-       prefix: "NEW_SERVICE_"
-   ```
-3. Run the consolidation command to update the main .env file:
-   ```bash
-   deployment env
-   ```
-4. Update docker-compose.yml to include the new service:
-   ```bash
-   deployment update
-   ```
-
 ## Getting Started
 
 1. Clone this repository
 2. Create .env files for your services or use auto-discovery
-3. Start the environment workflow:
+3. Generate the consolidated environment:
+
    ```bash
-   # Auto-discover services, create backups, and start containers
-   ./run-env-workflow.sh -d -b -s
+   # Auto-discover services and generate configurations
+   deployment env -d
+   deployment update
+   ```
+
+4. Start the services with Docker Compose:
+
+   ```bash
+   docker-compose up -d
    ```
 
 ## Environment Management Approach
@@ -284,19 +276,22 @@ This project uses a bottom-up approach to environment management:
 ### Bottom-up Approach (Service-specific → Consolidated)
 
 This approach is ideal when:
+
 - Individual services are developed by different teams
 - Each service has its own .env file with service-specific variables
 - You need to create a consolidated environment for deployment
 
 Steps:
+
 1. Develop services with their own .env files
-2. Run `consolidate-env-files.sh` to create a consolidated .env file
-3. Run `update-docker-compose.sh` to update docker-compose.yml
+2. Run `deployment env` to create a consolidated .env file
+3. Run `deployment update` to update docker-compose.yml
 4. Deploy using the consolidated environment
 
 ## Service Dependencies
 
 The infrastructure services have the following dependencies:
-- All services depend on the `setup` service that runs the environment workflow
+
 - API and frontend services depend on PostgreSQL, NATS, and Redis
 - Crawler services depend on PostgreSQL and NATS
+- Service dependencies are defined in the docker-compose.yml file using the `depends_on` directive

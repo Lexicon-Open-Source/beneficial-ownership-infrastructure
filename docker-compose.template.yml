@@ -124,13 +124,13 @@ services:
             - nats
     lexicon-named-entity-recognition:
         build:
-            context: ./lexicon-named-entity-recognition
+            context: ../lexicon-named-entity-recognition
             dockerfile: dev.Dockerfile
 
         environment:
             - ""
         volumes:
-            - ./lexicon-named-entity-recognition:/app
+            - ../lexicon-named-entity-recognition:/app
         networks:
             - app-network
         depends_on:
@@ -174,7 +174,7 @@ services:
 
 
     redis:
-        image: eqalpha/keydb:alpine_x86_64_v6.3.4
+        image: eqalpha/keydb
         environment:
             - ""
         ports:

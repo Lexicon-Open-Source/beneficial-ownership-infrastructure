@@ -232,7 +232,7 @@ services:
     #         - nats
     lexicon-named-entity-recognition:
         build:
-            context: ./lexicon-named-entity-recognition
+            context: ../lexicon-named-entity-recognition
             dockerfile: dev.Dockerfile
         environment:
             - OPENAI_MODEL=${NER_OPENAI_MODEL}
@@ -248,13 +248,14 @@ services:
         ports:
             - ${NER_PORT}:${NER_PORT}
         volumes:
-            - ./lexicon-named-entity-recognition:/app
+            - ../lexicon-named-entity-recognition:/app
         networks:
             - app-network
         depends_on:
             - postgres
             - redis
             - nats
+            - traefik
     # lkpp-indonesia-crawler:
     #     build:
     #         context: ./lkpp-indonesia-crawler
@@ -298,7 +299,7 @@ services:
         networks:
             - app-network
     redis:
-        image: eqalpha/keydb:alpine_x86_64_v6.3.4
+        image: eqalpha/keydb
         environment:
             - HOST=${REDIS_HOST}
             - PASSWORD=${REDIS_PASSWORD}
@@ -307,30 +308,30 @@ services:
             - ${REDIS_PORT}:${REDIS_PORT}
         volumes:
             - redis-data:/var/lib/keydb
-            - ./redis/redis.conf:/etc/keydb/redis.conf
+            # - ./redis/redis.conf:/etc/keydb/redis.conf
         networks:
             - app-network
         command: keydb-server /etc/keydb/redis.conf --requirepass ${REDIS_PASSWORD}
-    singapore-supreme-court-crawler:
-        build:
-            context: ./singapore-supreme-court-crawler
-            dockerfile: dev.Dockerfile
-        environment:
-            - POSTGRES_HOST=${SINGAPORE_CRAWLER_POSTGRES_HOST}
-            - POSTGRES_PORT=${SINGAPORE_CRAWLER_POSTGRES_PORT}
-            - POSTGRES_DB_NAME=${SINGAPORE_CRAWLER_POSTGRES_DB_NAME}
-            - POSTGRES_USERNAME=${SINGAPORE_CRAWLER_POSTGRES_USERNAME}
-            - POSTGRES_PASSWORD=${SINGAPORE_CRAWLER_POSTGRES_PASSWORD}
-            - GOOGLE_APPLICATION_CREDENTIALS=${SINGAPORE_CRAWLER_GOOGLE_APPLICATION_CREDENTIALS}
-            - GCS_BUCKET_NAME=${SINGAPORE_CRAWLER_GCS_BUCKET_NAME}
-        volumes:
-            - ./singapore-supreme-court-crawler:/app
-        networks:
-            - app-network
-        depends_on:
-            - postgres
-            - redis
-            - nats
+    # singapore-supreme-court-crawler:
+    #     build:
+    #         context: ./singapore-supreme-court-crawler
+    #         dockerfile: dev.Dockerfile
+    #     environment:
+    #         - POSTGRES_HOST=${SINGAPORE_CRAWLER_POSTGRES_HOST}
+    #         - POSTGRES_PORT=${SINGAPORE_CRAWLER_POSTGRES_PORT}
+    #         - POSTGRES_DB_NAME=${SINGAPORE_CRAWLER_POSTGRES_DB_NAME}
+    #         - POSTGRES_USERNAME=${SINGAPORE_CRAWLER_POSTGRES_USERNAME}
+    #         - POSTGRES_PASSWORD=${SINGAPORE_CRAWLER_POSTGRES_PASSWORD}
+    #         - GOOGLE_APPLICATION_CREDENTIALS=${SINGAPORE_CRAWLER_GOOGLE_APPLICATION_CREDENTIALS}
+    #         - GCS_BUCKET_NAME=${SINGAPORE_CRAWLER_GCS_BUCKET_NAME}
+    #     volumes:
+    #         - ./singapore-supreme-court-crawler:/app
+    #     networks:
+    #         - app-network
+    #     depends_on:
+    #         - postgres
+    #         - redis
+    #         - nats
     traefik:
         image: traefik:v2.10
         environment:

@@ -4,23 +4,23 @@ services:
     #         context: ./crawler-http-service
     #         dockerfile: dev.Dockerfile
     #     environment:
-    #         - NATS_HOST=${CRAWLER_HTTP_NATS_HOST}
-    #         - URL=${CRAWLER_HTTP_URL}
-    #         - NATS_USERNAME=${CRAWLER_HTTP_NATS_USERNAME}
-    #         - NATS_PORT=${CRAWLER_HTTP_NATS_PORT}
-    #         - PORT=${CRAWLER_HTTP_PORT}
-    #         - POSTGRES_PASSWORD=${CRAWLER_HTTP_POSTGRES_PASSWORD}
-    #         - NATS_PASSWORD=${CRAWLER_HTTP_NATS_PASSWORD}
-    #         - ENV=${CRAWLER_HTTP_ENV}
     #         - HOST=${CRAWLER_HTTP_HOST}
     #         - POSTGRES_DB_NAME=${CRAWLER_HTTP_POSTGRES_DB_NAME}
     #         - POSTGRES_USERNAME=${CRAWLER_HTTP_POSTGRES_USERNAME}
-    #         - POSTGRES_ROOT_PASSWORD=${CRAWLER_HTTP_POSTGRES_ROOT_PASSWORD}
+    #         - PORT=${CRAWLER_HTTP_PORT}
+    #         - POSTGRES_PASSWORD=${CRAWLER_HTTP_POSTGRES_PASSWORD}
     #         - POSTGRES_SSLMODE=${CRAWLER_HTTP_POSTGRES_SSLMODE}
-    #         - API_KEY=${CRAWLER_HTTP_API_KEY}
-    #         - POSTGRES_HOST=${CRAWLER_HTTP_POSTGRES_HOST}
+    #         - NATS_PASSWORD=${CRAWLER_HTTP_NATS_PASSWORD}
     #         - POSTGRES_PORT=${CRAWLER_HTTP_POSTGRES_PORT}
+    #         - POSTGRES_ROOT_PASSWORD=${CRAWLER_HTTP_POSTGRES_ROOT_PASSWORD}
     #         - SALT=${CRAWLER_HTTP_SALT}
+    #         - NATS_USERNAME=${CRAWLER_HTTP_NATS_USERNAME}
+    #         - URL=${CRAWLER_HTTP_URL}
+    #         - ENV=${CRAWLER_HTTP_ENV}
+    #         - POSTGRES_HOST=${CRAWLER_HTTP_POSTGRES_HOST}
+    #         - API_KEY=${CRAWLER_HTTP_API_KEY}
+    #         - NATS_HOST=${CRAWLER_HTTP_NATS_HOST}
+    #         - NATS_PORT=${CRAWLER_HTTP_NATS_PORT}
     #     ports:
     #         - ${CRAWLER_HTTP_PORT}:${CRAWLER_HTTP_PORT}
     #     labels:
@@ -63,8 +63,8 @@ services:
     #         - GOOGLE_APPLICATION_CREDENTIALS=${INDONESIA_CRAWLER_GOOGLE_APPLICATION_CREDENTIALS}
     #         - GCS_BUCKET_NAME=${INDONESIA_CRAWLER_GCS_BUCKET_NAME}
     #         - POSTGRES_HOST=${INDONESIA_CRAWLER_POSTGRES_HOST}
-    #         - POSTGRES_PORT=${INDONESIA_CRAWLER_POSTGRES_PORT}
     #         - POSTGRES_DB_NAME=${INDONESIA_CRAWLER_POSTGRES_DB_NAME}
+    #         - POSTGRES_PORT=${INDONESIA_CRAWLER_POSTGRES_PORT}
     #         - POSTGRES_USERNAME=${INDONESIA_CRAWLER_POSTGRES_USERNAME}
     #         - POSTGRES_PASSWORD=${INDONESIA_CRAWLER_POSTGRES_PASSWORD}
     #         - POSTGRES_ROOT_PASSWORD=${INDONESIA_CRAWLER_POSTGRES_ROOT_PASSWORD}
@@ -81,10 +81,10 @@ services:
     #         context: ./lexicon-beneficial-ownership
     #         dockerfile: dev.Dockerfile
     #     environment:
-    #         - NEXT_PUBLIC_API_KEY=${FRONTEND_NEXT_PUBLIC_API_KEY}
-    #         - NEXT_PUBLIC_SALT=${FRONTEND_NEXT_PUBLIC_SALT}
     #         - PORT=${FRONTEND_PORT}
     #         - LOG_LEVEL=${FRONTEND_LOG_LEVEL}
+    #         - NEXT_PUBLIC_API_KEY=${FRONTEND_NEXT_PUBLIC_API_KEY}
+    #         - NEXT_PUBLIC_SALT=${FRONTEND_NEXT_PUBLIC_SALT}
     #     ports:
     #         - ${FRONTEND_PORT}:${FRONTEND_PORT}
     #     labels:
@@ -103,19 +103,19 @@ services:
     #         context: ./lexicon-beneficial-ownership-api
     #         dockerfile: dev.Dockerfile
     #     environment:
+    #         - REDIS_PORT=${BO_API_REDIS_PORT}
+    #         - URL=${BO_API_URL}
+    #         - HOST=${BO_API_HOST}
+    #         - POSTGRES_DB_NAME=${BO_API_POSTGRES_DB_NAME}
+    #         - API_KEY=${BO_API_API_KEY}
+    #         - SALT=${BO_API_SALT}
+    #         - PORT=${BO_API_PORT}
+    #         - POSTGRES_HOST=${BO_API_POSTGRES_HOST}
+    #         - POSTGRES_PORT=${BO_API_POSTGRES_PORT}
+    #         - POSTGRES_USERNAME=${BO_API_POSTGRES_USERNAME}
+    #         - POSTGRES_PASSWORD=${BO_API_POSTGRES_PASSWORD}
     #         - REDIS_HOST=${BO_API_REDIS_HOST}
     #         - REDIS_PASSWORD=${BO_API_REDIS_PASSWORD}
-    #         - API_KEY=${BO_API_API_KEY}
-    #         - HOST=${BO_API_HOST}
-    #         - POSTGRES_HOST=${BO_API_POSTGRES_HOST}
-    #         - POSTGRES_PASSWORD=${BO_API_POSTGRES_PASSWORD}
-    #         - REDIS_PORT=${BO_API_REDIS_PORT}
-    #         - SALT=${BO_API_SALT}
-    #         - URL=${BO_API_URL}
-    #         - PORT=${BO_API_PORT}
-    #         - POSTGRES_PORT=${BO_API_POSTGRES_PORT}
-    #         - POSTGRES_DB_NAME=${BO_API_POSTGRES_DB_NAME}
-    #         - POSTGRES_USERNAME=${BO_API_POSTGRES_USERNAME}
     #     ports:
     #         - ${BO_API_PORT}:${BO_API_PORT}
     #     labels:
@@ -136,14 +136,14 @@ services:
     #         context: ./lexicon-beneficial-ownership-dataminer
     #         dockerfile: dev.Dockerfile
     #     environment:
-    #         - POSTGRES_SSLMODE=${DATAMINER_POSTGRES_SSLMODE}
-    #         - POSTGRES_CRAWLER_DB_NAME=${DATAMINER_POSTGRES_CRAWLER_DB_NAME}
-    #         - POSTGRES_BO_DB_NAME=${DATAMINER_POSTGRES_BO_DB_NAME}
     #         - POSTGRES_HOST=${DATAMINER_POSTGRES_HOST}
     #         - POSTGRES_PORT=${DATAMINER_POSTGRES_PORT}
     #         - POSTGRES_USERNAME=${DATAMINER_POSTGRES_USERNAME}
     #         - POSTGRES_PASSWORD=${DATAMINER_POSTGRES_PASSWORD}
     #         - POSTGRES_ROOT_PASSWORD=${DATAMINER_POSTGRES_ROOT_PASSWORD}
+    #         - POSTGRES_SSLMODE=${DATAMINER_POSTGRES_SSLMODE}
+    #         - POSTGRES_CRAWLER_DB_NAME=${DATAMINER_POSTGRES_CRAWLER_DB_NAME}
+    #         - POSTGRES_BO_DB_NAME=${DATAMINER_POSTGRES_BO_DB_NAME}
     #     volumes:
     #         - ./lexicon-beneficial-ownership-dataminer:/app
     #     networks:
@@ -157,64 +157,64 @@ services:
     #         context: ./lexicon-beneficiary-ownership-dashboard
     #         dockerfile: dev.Dockerfile
     #     environment:
-    #         - DB_PASSWORD=${DASHBOARD_DB_PASSWORD}
+    #         - DB_DATABASE=${DASHBOARD_DB_DATABASE}
     #         - SESSION_DRIVER=${DASHBOARD_SESSION_DRIVER}
-    #         - LOG_STACK=${DASHBOARD_LOG_STACK}
-    #         - REDIS_HOST=${DASHBOARD_REDIS_HOST}
+    #         - SESSION_ENCRYPT=${DASHBOARD_SESSION_ENCRYPT}
+    #         - LOG_CHANNEL=${DASHBOARD_LOG_CHANNEL}
+    #         - APP_PORT=${DASHBOARD_APP_PORT}
+    #         - AWS_SECRET_ACCESS_KEY=${DASHBOARD_AWS_SECRET_ACCESS_KEY}
+    #         - APP_TIMEZONE=${DASHBOARD_APP_TIMEZONE}
+    #         - MAIL_ENCRYPTION=${DASHBOARD_MAIL_ENCRYPTION}
+    #         - MAIL_PASSWORD=${DASHBOARD_MAIL_PASSWORD}
+    #         - DB_CONNECTION=${DASHBOARD_DB_CONNECTION}
+    #         - BROADCAST_CONNECTION=${DASHBOARD_BROADCAST_CONNECTION}
+    #         - CACHE_PREFIX=${DASHBOARD_CACHE_PREFIX}
+    #         - AWS_USE_PATH_STYLE_ENDPOINT=${DASHBOARD_AWS_USE_PATH_STYLE_ENDPOINT}
+    #         - REDIS_PORT=${DASHBOARD_REDIS_PORT}
+    #         - ELASTIC_SEARCH_SCHEME=${DASHBOARD_ELASTIC_SEARCH_SCHEME}
+    #         - MAIL_FROM_NAME=${DASHBOARD_MAIL_FROM_NAME}
     #         - ELASTIC_SEARCH_HOST=${DASHBOARD_ELASTIC_SEARCH_HOST}
+    #         - MAIL_HOST=${DASHBOARD_MAIL_HOST}
+    #         - MAIL_FROM_ADDRESS=${DASHBOARD_MAIL_FROM_ADDRESS}
+    #         - APP_KEY=${DASHBOARD_APP_KEY}
+    #         - DB_PORT=${DASHBOARD_DB_PORT}
+    #         - MEMCACHED_HOST=${DASHBOARD_MEMCACHED_HOST}
     #         - ELASTIC_SEARCH_PASS=${DASHBOARD_ELASTIC_SEARCH_PASS}
+    #         - APP_NAME=${DASHBOARD_APP_NAME}
+    #         - LOG_STACK=${DASHBOARD_LOG_STACK}
+    #         - DB_PASSWORD=${DASHBOARD_DB_PASSWORD}
+    #         - FILESYSTEM_DISK=${DASHBOARD_FILESYSTEM_DISK}
+    #         - CACHE_STORE=${DASHBOARD_CACHE_STORE}
+    #         - AWS_DEFAULT_REGION=${DASHBOARD_AWS_DEFAULT_REGION}
+    #         - VITE_APP_NAME=${DASHBOARD_VITE_APP_NAME}
+    #         - DB_USERNAME=${DASHBOARD_DB_USERNAME}
+    #         - SESSION_LIFETIME=${DASHBOARD_SESSION_LIFETIME}
     #         - BCRYPT_ROUNDS=${DASHBOARD_BCRYPT_ROUNDS}
     #         - DB_HOST=${DASHBOARD_DB_HOST}
-    #         - QUEUE_CONNECTION=${DASHBOARD_QUEUE_CONNECTION}
-    #         - SESSION_LIFETIME=${DASHBOARD_SESSION_LIFETIME}
-    #         - SESSION_DOMAIN=${DASHBOARD_SESSION_DOMAIN}
-    #         - FILESYSTEM_DISK=${DASHBOARD_FILESYSTEM_DISK}
-    #         - MAIL_MAILER=${DASHBOARD_MAIL_MAILER}
-    #         - MAIL_HOST=${DASHBOARD_MAIL_HOST}
-    #         - APP_TIMEZONE=${DASHBOARD_APP_TIMEZONE}
-    #         - APP_PORT=${DASHBOARD_APP_PORT}
-    #         - CACHE_PREFIX=${DASHBOARD_CACHE_PREFIX}
-    #         - ELASTIC_SEARCH_API_PORT=${DASHBOARD_ELASTIC_SEARCH_API_PORT}
-    #         - APP_NAME=${DASHBOARD_APP_NAME}
-    #         - APP_DEBUG=${DASHBOARD_APP_DEBUG}
-    #         - DB_USERNAME=${DASHBOARD_DB_USERNAME}
-    #         - MAIL_ENCRYPTION=${DASHBOARD_MAIL_ENCRYPTION}
-    #         - MAIL_FROM_NAME=${DASHBOARD_MAIL_FROM_NAME}
-    #         - APP_KEY=${DASHBOARD_APP_KEY}
-    #         - APP_FALLBACK_LOCALE=${DASHBOARD_APP_FALLBACK_LOCALE}
-    #         - LOG_CHANNEL=${DASHBOARD_LOG_CHANNEL}
-    #         - LOG_DEPRECATIONS_CHANNEL=${DASHBOARD_LOG_DEPRECATIONS_CHANNEL}
-    #         - DB_DATABASE=${DASHBOARD_DB_DATABASE}
-    #         - MAIL_PASSWORD=${DASHBOARD_MAIL_PASSWORD}
-    #         - AWS_SECRET_ACCESS_KEY=${DASHBOARD_AWS_SECRET_ACCESS_KEY}
-    #         - APP_LOCALE=${DASHBOARD_APP_LOCALE}
-    #         - APP_FAKER_LOCALE=${DASHBOARD_APP_FAKER_LOCALE}
-    #         - MEMCACHED_HOST=${DASHBOARD_MEMCACHED_HOST}
-    #         - ELASTIC_SEARCH_SCHEME=${DASHBOARD_ELASTIC_SEARCH_SCHEME}
-    #         - AWS_USE_PATH_STYLE_ENDPOINT=${DASHBOARD_AWS_USE_PATH_STYLE_ENDPOINT}
     #         - SESSION_PATH=${DASHBOARD_SESSION_PATH}
-    #         - APP_URL=${DASHBOARD_APP_URL}
-    #         - APP_MAINTENANCE_DRIVER=${DASHBOARD_APP_MAINTENANCE_DRIVER}
-    #         - DB_PORT=${DASHBOARD_DB_PORT}
+    #         - ELASTIC_SEARCH_API_PORT=${DASHBOARD_ELASTIC_SEARCH_API_PORT}
     #         - ELASTIC_SEARCH_USER=${DASHBOARD_ELASTIC_SEARCH_USER}
-    #         - CACHE_STORE=${DASHBOARD_CACHE_STORE}
+    #         - MAIL_MAILER=${DASHBOARD_MAIL_MAILER}
+    #         - LOG_DEPRECATIONS_CHANNEL=${DASHBOARD_LOG_DEPRECATIONS_CHANNEL}
     #         - ELASTIC_SEARCH_TRANSPORT_PORT=${DASHBOARD_ELASTIC_SEARCH_TRANSPORT_PORT}
-    #         - MAIL_USERNAME=${DASHBOARD_MAIL_USERNAME}
-    #         - AWS_DEFAULT_REGION=${DASHBOARD_AWS_DEFAULT_REGION}
     #         - AWS_BUCKET=${DASHBOARD_AWS_BUCKET}
+    #         - SESSION_DOMAIN=${DASHBOARD_SESSION_DOMAIN}
     #         - APP_ENV=${DASHBOARD_APP_ENV}
+    #         - APP_DEBUG=${DASHBOARD_APP_DEBUG}
+    #         - APP_FALLBACK_LOCALE=${DASHBOARD_APP_FALLBACK_LOCALE}
+    #         - REDIS_HOST=${DASHBOARD_REDIS_HOST}
     #         - LOG_LEVEL=${DASHBOARD_LOG_LEVEL}
-    #         - REDIS_CLIENT=${DASHBOARD_REDIS_CLIENT}
-    #         - AWS_ACCESS_KEY_ID=${DASHBOARD_AWS_ACCESS_KEY_ID}
-    #         - SESSION_ENCRYPT=${DASHBOARD_SESSION_ENCRYPT}
-    #         - REDIS_PASSWORD=${DASHBOARD_REDIS_PASSWORD}
-    #         - VITE_APP_NAME=${DASHBOARD_VITE_APP_NAME}
     #         - APP_MAINTENANCE_STORE=${DASHBOARD_APP_MAINTENANCE_STORE}
-    #         - MAIL_FROM_ADDRESS=${DASHBOARD_MAIL_FROM_ADDRESS}
-    #         - DB_CONNECTION=${DASHBOARD_DB_CONNECTION}
-    #         - REDIS_PORT=${DASHBOARD_REDIS_PORT}
-    #         - BROADCAST_CONNECTION=${DASHBOARD_BROADCAST_CONNECTION}
+    #         - APP_URL=${DASHBOARD_APP_URL}
+    #         - APP_LOCALE=${DASHBOARD_APP_LOCALE}
+    #         - REDIS_CLIENT=${DASHBOARD_REDIS_CLIENT}
+    #         - APP_MAINTENANCE_DRIVER=${DASHBOARD_APP_MAINTENANCE_DRIVER}
+    #         - QUEUE_CONNECTION=${DASHBOARD_QUEUE_CONNECTION}
+    #         - REDIS_PASSWORD=${DASHBOARD_REDIS_PASSWORD}
+    #         - AWS_ACCESS_KEY_ID=${DASHBOARD_AWS_ACCESS_KEY_ID}
+    #         - APP_FAKER_LOCALE=${DASHBOARD_APP_FAKER_LOCALE}
     #         - MAIL_PORT=${DASHBOARD_MAIL_PORT}
+    #         - MAIL_USERNAME=${DASHBOARD_MAIL_USERNAME}
     #     ports:
     #         - ${DASHBOARD_APP_PORT}:${DASHBOARD_APP_PORT}
     #     labels:
@@ -235,27 +235,18 @@ services:
             context: ../lexicon-named-entity-recognition
             dockerfile: dev.Dockerfile
         environment:
-            - OPENAI_MODEL=${NER_OPENAI_MODEL}
+            - LOG_LEVEL=${NER_LOG_LEVEL}
             - OPENAI_MAX_TOKENS=${NER_OPENAI_MAX_TOKENS}
             - OPENAI_TEMPERATURE=${NER_OPENAI_TEMPERATURE}
             - CACHE_SIZE=${NER_CACHE_SIZE}
             - MAX_BATCH_SIZE=${NER_MAX_BATCH_SIZE}
-            - LOG_LEVEL=${NER_LOG_LEVEL}
             - PORT=${NER_PORT}
             - API_KEY=${NER_API_KEY}
             - REQUIRE_API_KEY=${NER_REQUIRE_API_KEY}
             - OPENAI_API_KEY=${NER_OPENAI_API_KEY}
+            - OPENAI_MODEL=${NER_OPENAI_MODEL}
         ports:
             - ${NER_PORT}:${NER_PORT}
-        volumes:
-            - ../lexicon-named-entity-recognition:/app
-        networks:
-            - app-network
-        depends_on:
-            - postgres
-            - redis
-            - nats
-            - traefik
         labels:
             - traefik.enable=true
             - traefik.http.routers.ner.rule=Host(`localhost`) && PathPrefix(`/ner`)
@@ -264,7 +255,14 @@ services:
             - traefik.http.middlewares.ner-stripprefix.stripprefix.prefixes=/ner
             - traefik.http.middlewares.ner-addprefix.addprefix.prefix=/api
             - traefik.http.routers.ner.middlewares=ner-stripprefix@docker,ner-addprefix@docker
-
+        volumes:
+            - ../lexicon-named-entity-recognition:/app
+        networks:
+            - app-network
+        depends_on:
+            - postgres
+            - redis
+            - nats
     # lkpp-indonesia-crawler:
     #     build:
     #         context: ./lkpp-indonesia-crawler
@@ -278,29 +276,29 @@ services:
     #         - redis
     #         - nats
     nats:
-        image: nats:2.9.6
+        image: nats:2.11-alpine
         environment:
-            - HOST=${NATS_HOST}
-            - PORT=${NATS_PORT}
-            - USER=${NATS_USER}
-            - PASSWORD=${NATS_PASSWORD}
-            - JETSTREAM_ENABLED=${NATS_JETSTREAM_ENABLED}
-            - PORT_MONITORING=${NATS_PORT_MONITORING}
+            - NATS_HOST=${NATS_HOST}
+            - NATS_PORT=${NATS_PORT}
+            - NATS_USER=${NATS_USER}
+            - NATS_PASSWORD=${NATS_PASSWORD}
+            - NATS_JETSTREAM_ENABLED=${NATS_JETSTREAM_ENABLED}
+            - NATS_PORT_MONITORING=${NATS_PORT_MONITORING}
         ports:
-            - ${NATS_PORT}:${NATS_PORT}
             - ${NATS_PORT_MONITORING}:${NATS_PORT_MONITORING}
+            - ${NATS_PORT}:${NATS_PORT}
         networks:
             - app-network
         command: --jetstream --user ${NATS_USER} --pass ${NATS_PASSWORD}
     postgres:
-        image: postgres:15
+        image: postgres:15-alpine
         environment:
-            - POSTGRES_BO_DB_NAME=${POSTGRES_BO_DB_NAME}
-            - POSTGRES_USERNAME=${POSTGRES_USERNAME}
-            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-            - POSTGRES_HOST=${POSTGRES_HOST}
             - POSTGRES_PORT=${POSTGRES_PORT}
             - POSTGRES_CRAWLER_DB_NAME=${POSTGRES_CRAWLER_DB_NAME}
+            - POSTGRES_BO_DB_NAME=${POSTGRES_BO_DB_NAME}
+            - POSTGRES_USER=${POSTGRES_USER}
+            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+            - POSTGRES_HOST=${POSTGRES_HOST}
         ports:
             - ${POSTGRES_PORT}:${POSTGRES_PORT}
         volumes:
@@ -310,9 +308,9 @@ services:
     redis:
         image: eqalpha/keydb
         environment:
-            - HOST=${REDIS_HOST}
-            - PASSWORD=${REDIS_PASSWORD}
-            - PORT=${REDIS_PORT}
+            - REDIS_HOST=${REDIS_HOST}
+            - REDIS_PASSWORD=${REDIS_PASSWORD}
+            - REDIS_PORT=${REDIS_PORT}
         ports:
             - ${REDIS_PORT}:${REDIS_PORT}
         volumes:
@@ -348,20 +346,18 @@ services:
             - HTTPS_PORT=${TRAEFIK_HTTPS_PORT}
             - DASHBOARD_PORT=${TRAEFIK_DASHBOARD_PORT}
         ports:
-            - ${TRAEFIK_HTTP_PORT}:${TRAEFIK_HTTP_PORT}
-            - ${TRAEFIK_DASHBOARD_PORT}:${TRAEFIK_DASHBOARD_PORT}
             - ${TRAEFIK_HTTPS_PORT}:${TRAEFIK_HTTPS_PORT}
+            - ${TRAEFIK_DASHBOARD_PORT}:${TRAEFIK_DASHBOARD_PORT}
+            - ${TRAEFIK_HTTP_PORT}:${TRAEFIK_HTTP_PORT}
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
-            - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+            - ./traefik/traefik.yml:/etc/traefik/traefik.yml
         networks:
             - traefik-network
             - app-network
 networks:
-    app-network:
-    traefik-network:
+    app-network: null
+    traefik-network: null
 volumes:
     postgres-data:
-        driver: local
     redis-data:
-        driver: local

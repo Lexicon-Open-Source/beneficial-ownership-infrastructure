@@ -169,7 +169,7 @@ services:
             - app-network
         command: --jetstream --user ${NATS_USER} --pass ${NATS_PASSWORD}
     postgres:
-        image: postgres:15-alpine
+        image: postgres:17.4-alpine
 
         environment:
             - ""

@@ -36,24 +36,28 @@ services:
     #         - postgres
     #         - redis
     #         - nats
-    # indonesia-supreme-court-ai-summarization:
-    #     build:
-    #         context: ./indonesia-supreme-court-ai-summarization
-    #         dockerfile: dev.Dockerfile
-    #     environment:
-    #         - OPENAI_API_KEY=${INDONESIA_CRAWLER_AI_SUMMARIZATION_OPENAI_API_KEY}
-    #         - DB_ADDR=${INDONESIA_CRAWLER_AI_SUMMARIZATION_DB_ADDR}
-    #         - DB_USER=${INDONESIA_CRAWLER_AI_SUMMARIZATION_DB_USER}
-    #         - DB_PASS=${INDONESIA_CRAWLER_AI_SUMMARIZATION_DB_PASS}
-    #         - NATS__URL=${INDONESIA_CRAWLER_AI_SUMMARIZATION_NATS__URL}
-    #     volumes:
-    #         - ./indonesia-supreme-court-ai-summarization:/app
-    #     networks:
-    #         - app-network
-    #     depends_on:
-    #         - postgres
-    #         - redis
-    #         - nats
+    indonesia-supreme-court-ai-summarization:
+        build:
+            context: ../indonesia-supreme-court-ai-summarization
+            dockerfile: dev.Dockerfile
+        environment:
+            - OPENAI_API_KEY=${INDONESIA_CRAWLER_AI_SUMMARIZATION_OPENAI_API_KEY}
+            - DB_ADDR=${INDONESIA_CRAWLER_AI_SUMMARIZATION_DB_ADDR}
+            - DB_USER=${INDONESIA_CRAWLER_AI_SUMMARIZATION_DB_USER}
+            - DB_PASS=${INDONESIA_CRAWLER_AI_SUMMARIZATION_DB_PASS}
+            - NATS__URL=${INDONESIA_CRAWLER_AI_SUMMARIZATION_NATS__URL}
+        volumes:
+            - ./indonesia-supreme-court-ai-summarization:/app
+        networks:
+            - app-network
+        depends_on:
+            - postgres
+            - redis
+            - nats
+        labels:
+            - traefik.enable=true
+            - traefik.http.routers.indonesia-supreme-court-ai-summarization.rule=Host(`localhost`) && PathPrefix(`/indonesia-supreme-court-ai-summarization`)
+            - traefik.http.services.indonesia-supreme-court-ai-summarization.loadbalancer.server.port=${INDONESIA_CRAWLER_AI_SUMMARIZATION_SERVICE_PORT}
     # indonesia-supreme-court-crawler:
     #     build:
     #         context: ./indonesia-supreme-court-crawler
@@ -291,7 +295,7 @@ services:
             - app-network
         command: --jetstream --user ${NATS_USER} --pass ${NATS_PASSWORD}
     postgres:
-        image: postgres:15-alpine
+        image: postgres:17.4-alpine
         environment:
             - POSTGRES_PORT=${POSTGRES_PORT}
             - POSTGRES_CRAWLER_DB_NAME=${POSTGRES_CRAWLER_DB_NAME}

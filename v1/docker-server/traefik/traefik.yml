@@ -46,4 +46,4 @@ certificatesResolvers:
 
 # Log information
 log:
-  level: INFO
+  level: DEBUG

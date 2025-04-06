@@ -18,6 +18,12 @@ services:
       - traefik-public
     labels:
       - "traefik.enable=true"
+      # HTTP router for Cloudflare Flexible SSL
+      - "traefik.http.routers.traefik-http.rule=Host(`${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.traefik-http.service=api@internal"
+      - "traefik.http.routers.traefik-http.entrypoints=web"
+      - "traefik.http.routers.traefik-http.middlewares=traefik-auth@file,secure-headers@file"
+      # HTTPS router (kept for direct access)
       - "traefik.http.routers.traefik.rule=Host(`${TRAEFIK_DOMAIN}`)"
       - "traefik.http.routers.traefik.service=api@internal"
       - "traefik.http.routers.traefik.entrypoints=websecure"

@@ -18,7 +18,7 @@ entryPoints:
 # API and dashboard configuration
 api:
   dashboard: true
-  insecure: false
+  insecure: true # Changed to true to allow HTTP access for Cloudflare Flexible SSL
 
 # Configure providers
 providers:

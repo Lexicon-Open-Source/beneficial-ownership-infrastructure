@@ -50,4 +50,4 @@ accessLog:
 
 # Log information
 log:
-  level: DEBUG
+  level: INFO

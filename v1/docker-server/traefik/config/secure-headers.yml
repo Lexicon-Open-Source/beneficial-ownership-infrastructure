@@ -2,9 +2,6 @@ http:
   middlewares:
     secure-headers:
       headers:
-        frameDeny: false
-        sslRedirect: false
-        browserXssFilter: false
         contentTypeNosniff: true
         stsSeconds: 31536000
         stsIncludeSubdomains: true
@@ -16,26 +13,3 @@ http:
         customFrameOptionsValue: SAMEORIGIN
         customRequestHeaders:
           X-Forwarded-Proto: https
-
-    compress:
-      compress: {}
-
-    cors:
-      cors:
-        allowCredentials: true
-        allowMethods:
-          - GET
-          - POST
-          - PUT
-          - DELETE
-          - OPTIONS
-        allowOrigins:
-          - "https://lexicon.id"
-          - "https://*.lexicon.id"
-        maxAge: 100
-        addVaryHeader: true
-
-    rate-limit:
-      rateLimit:
-        average: 100
-        burst: 50

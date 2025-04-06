@@ -1,0 +1,16 @@
+http:
+  middlewares:
+    cors:
+      headers:
+        accessControlAllowCredentials: true
+        accessControlAllowMethods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - OPTIONS
+        accessControlAllowOriginList:
+          - "https://lexicon.id"
+          - "https://*.lexicon.id"
+        accessControlMaxAge: 100
+        addVaryHeader: true

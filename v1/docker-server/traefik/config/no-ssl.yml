@@ -1,0 +1,14 @@
+http:
+  middlewares:
+    no-ssl:
+      headers:
+        sslRedirect: false
+        stsSeconds: 0
+        stsIncludeSubdomains: false
+        stsPreload: false
+        forceStsHeader: false
+        frameDeny: false
+        customFrameOptionsValue: "SAMEORIGIN"
+        contentTypeNosniff: true
+        browserXssFilter: true
+        customBrowserXssValue: "1; mode=block"

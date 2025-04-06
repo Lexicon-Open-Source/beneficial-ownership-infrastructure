@@ -12,13 +12,14 @@ entryPoints:
   # Keep web entrypoint for Let's Encrypt HTTP challenge
   web:
     address: ":80"
+    # No HTTP to HTTPS redirect for Cloudflare Flexible SSL
   websecure:
     address: ":443"
 
 # API and dashboard configuration
 api:
   dashboard: true
-  insecure: true # Changed to true to allow HTTP access for Cloudflare Flexible SSL
+  insecure: true # Allow HTTP access for Cloudflare Flexible SSL
 
 # Configure providers
 providers:

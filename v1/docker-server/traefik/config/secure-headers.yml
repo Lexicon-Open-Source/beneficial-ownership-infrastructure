@@ -4,9 +4,9 @@ http:
       headers:
         contentTypeNosniff: true
         stsSeconds: 31536000
-        stsIncludeSubdomains: true
-        stsPreload: true
-        forceStsHeader: true
+        stsIncludeSubdomains: false
+        stsPreload: false
+        forceStsHeader: false
         contentSecurityPolicy: "frame-ancestors 'self'"
         referrerPolicy: "strict-origin-when-cross-origin"
         permissionsPolicy: "camera=(), microphone=(), geolocation=(), payment=()"

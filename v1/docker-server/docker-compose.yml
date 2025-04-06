@@ -10,7 +10,7 @@ services:
       - "${HTTPS_PORT}:443"   # HTTPS
       - "${ADMIN_PORT}:8080"  # Admin
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /run/docker.sock:/var/run/docker.sock:ro
       - ./traefik/acme.json:/acme.json
       - ./traefik/traefik.yml:/traefik.yml
       - ./traefik/config:/config

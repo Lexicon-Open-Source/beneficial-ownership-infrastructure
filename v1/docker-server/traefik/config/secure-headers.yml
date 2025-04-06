@@ -11,5 +11,3 @@ http:
         referrerPolicy: "strict-origin-when-cross-origin"
         permissionsPolicy: "camera=(), microphone=(), geolocation=(), payment=()"
         customFrameOptionsValue: SAMEORIGIN
-        customRequestHeaders:
-          X-Forwarded-Proto: https

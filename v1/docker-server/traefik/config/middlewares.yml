@@ -2,14 +2,17 @@ http:
   middlewares:
     secure-headers:
       headers:
-        frameDeny: true
-        sslRedirect: true
-        browserXssFilter: true
+        frameDeny: false
+        sslRedirect: false
+        browserXssFilter: false
         contentTypeNosniff: true
-        forceSTSHeader: true
+        stsSeconds: 31536000
         stsIncludeSubdomains: true
         stsPreload: true
-        stsSeconds: 31536000
+        forceStsHeader: true
+        contentSecurityPolicy: "frame-ancestors 'self'"
+        referrerPolicy: "strict-origin-when-cross-origin"
+        permissionsPolicy: "camera=(), microphone=(), geolocation=(), payment=()"
         customFrameOptionsValue: SAMEORIGIN
         customRequestHeaders:
           X-Forwarded-Proto: https
@@ -18,19 +21,18 @@ http:
       compress: {}
 
     cors:
-      headers:
+      cors:
         allowCredentials: true
-        accessControlAllowMethods:
+        allowMethods:
           - GET
           - POST
           - PUT
           - DELETE
           - OPTIONS
-        accessControlAllowOrigins:
+        allowOrigins:
           - "https://lexicon.id"
           - "https://*.lexicon.id"
-        accessControlAllowCredentials: true
-        accessControlMaxAge: 100
+        maxAge: 100
         addVaryHeader: true
 
     rate-limit:

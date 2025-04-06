@@ -3,6 +3,10 @@ global:
   checkNewVersion: true
   sendAnonymousUsage: false
 
+# Core configuration
+core:
+  defaultRuleSyntax: v2
+
 # Configure the entry points
 entryPoints:
   web:

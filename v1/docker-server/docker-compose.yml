@@ -1,7 +1,6 @@
-
 services:
   traefik:
-    image: traefik:v2.9
+    image: traefik:v3.3
     container_name: traefik
     restart: unless-stopped
     env_file:
@@ -23,7 +22,7 @@ services:
       - "traefik.http.routers.traefik.service=api@internal"
       - "traefik.http.routers.traefik.entrypoints=websecure"
       - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
-      - "traefik.http.middlewares.traefik-auth.basicauth.usersfile=/traefik/config/users"
+      - "traefik.http.middlewares.traefik-auth.basicauth.usersfile=/config/users"
       - "traefik.http.routers.traefik.middlewares=traefik-auth,secure-headers@file"
 
 networks:

@@ -34,3 +34,12 @@ networks:
   traefik-public:
     name: traefik-public
     external: true
+
+# Note for additional services using Cloudflare Flexible SSL:
+# For services like bo-chat, use the following label configuration pattern:
+#
+# - "traefik.http.routers.[service]-http.entrypoints=web"
+# - "traefik.http.routers.[service]-http.middlewares=cors@file,rate-limit@file"  # Don't use secure-headers for HTTP
+#
+# - "traefik.http.routers.[service].entrypoints=websecure"
+# - "traefik.http.routers.[service].middlewares=secure-headers@file,cors@file,rate-limit@file"

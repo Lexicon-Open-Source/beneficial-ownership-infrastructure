@@ -1,0 +1,23 @@
+# Environment variables
+.env
+.env.bak
+
+# ACME certificates
+traefik/acme.json
+
+# Authentication files
+traefik/config/users
+
+# Logs
+*.log
+
+# Backup files
+*.bak
+
+# macOS system files
+.DS_Store
+
+# Docker volumes and temporary files
+docker-volumes/
+.docker/
+tmp/

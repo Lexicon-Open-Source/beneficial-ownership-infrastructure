@@ -32,5 +32,5 @@ services:
 
 networks:
   traefik-public:
-    name: ${DOCKER_NETWORK}
+    name: traefik-public
     external: true

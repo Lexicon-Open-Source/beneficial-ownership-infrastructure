@@ -9,6 +9,7 @@ core:
 
 # Configure the entry points
 entryPoints:
+  # Keep web entrypoint for Let's Encrypt HTTP challenge
   web:
     address: ":80"
   websecure:
@@ -39,9 +40,9 @@ certificatesResolvers:
       httpChallenge:
         entryPoint: web
 
-# Access logs
-accessLog:
-  filePath: /var/log/traefik/access.log
+# # Access logs
+# accessLog:
+#   filePath: /var/log/traefik/access.log
 
 # Log information
 log:

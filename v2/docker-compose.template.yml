@@ -14,7 +14,7 @@ services:
             - ./crawler-http-service:/app
         networks:
             - traefik-network
-            - app-network
+            - infra-network
         depends_on:
             - postgres
             - redis
@@ -29,7 +29,7 @@ services:
         volumes:
             - ./indonesia-supreme-court-ai-summarization:/app
         networks:
-            - app-network
+            - infra-network
         depends_on:
             - postgres
             - redis
@@ -44,7 +44,7 @@ services:
         volumes:
             - ./indonesia-supreme-court-crawler:/app
         networks:
-            - app-network
+            - infra-network
         depends_on:
             - postgres
             - redis
@@ -64,7 +64,7 @@ services:
             - ./lexicon-beneficial-ownership:/app
         networks:
             - traefik-network
-            - app-network
+            - infra-network
         depends_on:
             - lexicon-beneficial-ownership-api
     lexicon-beneficial-ownership-api:
@@ -82,7 +82,7 @@ services:
             - ./lexicon-beneficial-ownership-api:/app
         networks:
             - traefik-network
-            - app-network
+            - infra-network
         depends_on:
             - postgres
             - redis
@@ -97,7 +97,7 @@ services:
         volumes:
             - ./lexicon-beneficial-ownership-dataminer:/app
         networks:
-            - app-network
+            - infra-network
         depends_on:
             - postgres
             - redis
@@ -117,7 +117,7 @@ services:
             - ./lexicon-beneficiary-ownership-dashboard:/app
         networks:
             - traefik-network
-            - app-network
+            - infra-network
         depends_on:
             - postgres
             - redis
@@ -132,7 +132,7 @@ services:
         volumes:
             - ../lexicon-named-entity-recognition:/app
         networks:
-            - app-network
+            - infra-network
         depends_on:
             - postgres
             - redis
@@ -153,7 +153,7 @@ services:
         volumes:
             - ./lkpp-indonesia-crawler:/app
         networks:
-            - app-network
+            - infra-network
         depends_on:
             - postgres
             - redis
@@ -166,7 +166,7 @@ services:
         ports:
             - ""
         networks:
-            - app-network
+            - infra-network
         command: --jetstream --user ${NATS_USER} --pass ${NATS_PASSWORD}
     postgres:
         image: postgres:17.4-alpine
@@ -178,7 +178,7 @@ services:
         volumes:
             - postgres-data:/var/lib/postgresql/data
         networks:
-            - app-network
+            - infra-network
 
 
     redis:
@@ -188,7 +188,7 @@ services:
         ports:
             - ""
         networks:
-            - app-network
+            - infra-network
         volumes:
             - redis-data:/var/lib/keydb
             - ./redis/redis.conf:/etc/keydb/redis.conf
@@ -205,7 +205,7 @@ services:
         volumes:
             - ./singapore-supreme-court-crawler:/app
         networks:
-            - app-network
+            - infra-network
         depends_on:
             - postgres
             - redis
@@ -222,10 +222,10 @@ services:
             - ./traefik/traefik.yml:/etc/traefik/traefik.yml
         networks:
             - traefik-network
-            - app-network
+            - infra-network
 
 networks:
-    app-network:
+    infra-network:
     traefik-network:
 volumes:
     postgres-data:

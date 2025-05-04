@@ -31,33 +31,33 @@ services:
     #         - ./crawler-http-service:/app
     #     networks:
     #         - traefik-network
-    #         - app-network
+    #         - infra-network
     #     depends_on:
     #         - postgres
     #         - redis
     #         - nats
-    indonesia-supreme-court-ai-summarization:
-        build:
-            context: ../indonesia-supreme-court-ai-summarization
-            dockerfile: dev.Dockerfile
-        environment:
-            - OPENAI_API_KEY=${INDONESIA_CRAWLER_AI_SUMMARIZATION_OPENAI_API_KEY}
-            - DB_ADDR=${INDONESIA_CRAWLER_AI_SUMMARIZATION_DB_ADDR}
-            - DB_USER=${INDONESIA_CRAWLER_AI_SUMMARIZATION_DB_USER}
-            - DB_PASS=${INDONESIA_CRAWLER_AI_SUMMARIZATION_DB_PASS}
-            - NATS__URL=${INDONESIA_CRAWLER_AI_SUMMARIZATION_NATS__URL}
-        volumes:
-            - ./indonesia-supreme-court-ai-summarization:/app
-        networks:
-            - app-network
-        depends_on:
-            - postgres
-            - redis
-            - nats
-        labels:
-            - traefik.enable=true
-            - traefik.http.routers.indonesia-supreme-court-ai-summarization.rule=Host(`localhost`) && PathPrefix(`/indonesia-supreme-court-ai-summarization`)
-            - traefik.http.services.indonesia-supreme-court-ai-summarization.loadbalancer.server.port=${INDONESIA_CRAWLER_AI_SUMMARIZATION_SERVICE_PORT}
+    # indonesia-supreme-court-ai-summarization:
+    #     build:
+    #         context: ../indonesia-supreme-court-ai-summarization
+    #         dockerfile: dev.Dockerfile
+    #     environment:
+    #         - OPENAI_API_KEY=${INDONESIA_CRAWLER_AI_SUMMARIZATION_OPENAI_API_KEY}
+    #         - DB_ADDR=${INDONESIA_CRAWLER_AI_SUMMARIZATION_DB_ADDR}
+    #         - DB_USER=${INDONESIA_CRAWLER_AI_SUMMARIZATION_DB_USER}
+    #         - DB_PASS=${INDONESIA_CRAWLER_AI_SUMMARIZATION_DB_PASS}
+    #         - NATS__URL=${INDONESIA_CRAWLER_AI_SUMMARIZATION_NATS__URL}
+    #     volumes:
+    #         - ./indonesia-supreme-court-ai-summarization:/app
+    #     networks:
+    #         - infra-network
+    #     depends_on:
+    #         - postgres
+    #         - redis
+    #         - nats
+    #     labels:
+    #         - traefik.enable=true
+    #         - traefik.http.routers.indonesia-supreme-court-ai-summarization.rule=Host(`localhost`) && PathPrefix(`/indonesia-supreme-court-ai-summarization`)
+    #         - traefik.http.services.indonesia-supreme-court-ai-summarization.loadbalancer.server.port=${INDONESIA_CRAWLER_AI_SUMMARIZATION_SERVICE_PORT}
     # indonesia-supreme-court-crawler:
     #     build:
     #         context: ./indonesia-supreme-court-crawler
@@ -75,7 +75,7 @@ services:
     #     volumes:
     #         - ./indonesia-supreme-court-crawler:/app
     #     networks:
-    #         - app-network
+    #         - infra-network
     #     depends_on:
     #         - postgres
     #         - redis
@@ -99,7 +99,7 @@ services:
     #         - ./lexicon-beneficial-ownership:/app
     #     networks:
     #         - traefik-network
-    #         - app-network
+    #         - infra-network
     #     depends_on:
     #         - lexicon-beneficial-ownership-api
     # lexicon-beneficial-ownership-api:
@@ -130,7 +130,7 @@ services:
     #         - ./lexicon-beneficial-ownership-api:/app
     #     networks:
     #         - traefik-network
-    #         - app-network
+    #         - infra-network
     #     depends_on:
     #         - postgres
     #         - redis
@@ -151,7 +151,7 @@ services:
     #     volumes:
     #         - ./lexicon-beneficial-ownership-dataminer:/app
     #     networks:
-    #         - app-network
+    #         - infra-network
     #     depends_on:
     #         - postgres
     #         - redis
@@ -229,44 +229,44 @@ services:
     #         - ./lexicon-beneficiary-ownership-dashboard:/app
     #     networks:
     #         - traefik-network
-    #         - app-network
+    #         - infra-network
     #     depends_on:
     #         - postgres
     #         - redis
     #         - nats
-    lexicon-named-entity-recognition:
-        build:
-            context: ../lexicon-named-entity-recognition
-            dockerfile: dev.Dockerfile
-        environment:
-            - LOG_LEVEL=${NER_LOG_LEVEL}
-            - OPENAI_MAX_TOKENS=${NER_OPENAI_MAX_TOKENS}
-            - OPENAI_TEMPERATURE=${NER_OPENAI_TEMPERATURE}
-            - CACHE_SIZE=${NER_CACHE_SIZE}
-            - MAX_BATCH_SIZE=${NER_MAX_BATCH_SIZE}
-            - PORT=${NER_PORT}
-            - API_KEY=${NER_API_KEY}
-            - REQUIRE_API_KEY=${NER_REQUIRE_API_KEY}
-            - OPENAI_API_KEY=${NER_OPENAI_API_KEY}
-            - OPENAI_MODEL=${NER_OPENAI_MODEL}
-        ports:
-            - ${NER_PORT}:${NER_PORT}
-        labels:
-            - traefik.enable=true
-            - traefik.http.routers.ner.rule=Host(`localhost`) && PathPrefix(`/ner`)
-            - traefik.http.services.ner.loadbalancer.server.port=${NER_PORT}
-            - traefik.http.routers.ner.entrypoints=web
-            - traefik.http.middlewares.ner-stripprefix.stripprefix.prefixes=/ner
-            - traefik.http.middlewares.ner-addprefix.addprefix.prefix=/api
-            - traefik.http.routers.ner.middlewares=ner-stripprefix@docker,ner-addprefix@docker
-        volumes:
-            - ../lexicon-named-entity-recognition:/app
-        networks:
-            - app-network
-        depends_on:
-            - postgres
-            - redis
-            - nats
+    # lexicon-named-entity-recognition:
+    #     build:
+    #         context: ../lexicon-named-entity-recognition
+    #         dockerfile: dev.Dockerfile
+    #     environment:
+    #         - LOG_LEVEL=${NER_LOG_LEVEL}
+    #         - OPENAI_MAX_TOKENS=${NER_OPENAI_MAX_TOKENS}
+    #         - OPENAI_TEMPERATURE=${NER_OPENAI_TEMPERATURE}
+    #         - CACHE_SIZE=${NER_CACHE_SIZE}
+    #         - MAX_BATCH_SIZE=${NER_MAX_BATCH_SIZE}
+    #         - PORT=${NER_PORT}
+    #         - API_KEY=${NER_API_KEY}
+    #         - REQUIRE_API_KEY=${NER_REQUIRE_API_KEY}
+    #         - OPENAI_API_KEY=${NER_OPENAI_API_KEY}
+    #         - OPENAI_MODEL=${NER_OPENAI_MODEL}
+    #     ports:
+    #         - ${NER_PORT}:${NER_PORT}
+    #     labels:
+    #         - traefik.enable=true
+    #         - traefik.http.routers.ner.rule=Host(`localhost`) && PathPrefix(`/ner`)
+    #         - traefik.http.services.ner.loadbalancer.server.port=${NER_PORT}
+    #         - traefik.http.routers.ner.entrypoints=web
+    #         - traefik.http.middlewares.ner-stripprefix.stripprefix.prefixes=/ner
+    #         - traefik.http.middlewares.ner-addprefix.addprefix.prefix=/api
+    #         - traefik.http.routers.ner.middlewares=ner-stripprefix@docker,ner-addprefix@docker
+    #     volumes:
+    #         - ../lexicon-named-entity-recognition:/app
+    #     networks:
+    #         - infra-network
+    #     depends_on:
+    #         - postgres
+    #         - redis
+    #         - nats
     # lkpp-indonesia-crawler:
     #     build:
     #         context: ./lkpp-indonesia-crawler
@@ -274,7 +274,7 @@ services:
     #     volumes:
     #         - ./lkpp-indonesia-crawler:/app
     #     networks:
-    #         - app-network
+    #         - infra-network
     #     depends_on:
     #         - postgres
     #         - redis
@@ -292,7 +292,7 @@ services:
             - ${NATS_PORT_MONITORING}:${NATS_PORT_MONITORING}
             - ${NATS_PORT}:${NATS_PORT}
         networks:
-            - app-network
+            - infra-network
         command: --jetstream --user ${NATS_USER} --pass ${NATS_PASSWORD}
     postgres:
         image: postgres:17.4-alpine
@@ -308,7 +308,7 @@ services:
         volumes:
             - postgres-data:/var/lib/postgresql/data
         networks:
-            - app-network
+            - infra-network
     redis:
         image: eqalpha/keydb
         environment:
@@ -321,7 +321,7 @@ services:
             - redis-data:/var/lib/keydb
             # - ./redis/redis.conf:/etc/keydb/redis.conf
         networks:
-            - app-network
+            - infra-network
         command: keydb-server /etc/keydb/redis.conf --requirepass ${REDIS_PASSWORD}
     # singapore-supreme-court-crawler:
     #     build:
@@ -338,30 +338,30 @@ services:
     #     volumes:
     #         - ./singapore-supreme-court-crawler:/app
     #     networks:
-    #         - app-network
+    #         - infra-network
     #     depends_on:
     #         - postgres
     #         - redis
     #         - nats
-    traefik:
-        image: traefik:v3.3
-        environment:
-            - HTTP_PORT=${TRAEFIK_HTTP_PORT}
-            - HTTPS_PORT=${TRAEFIK_HTTPS_PORT}
-            - DASHBOARD_PORT=${TRAEFIK_DASHBOARD_PORT}
-        ports:
-            - ${TRAEFIK_HTTPS_PORT}:${TRAEFIK_HTTPS_PORT}
-            - ${TRAEFIK_DASHBOARD_PORT}:${TRAEFIK_DASHBOARD_PORT}
-            - ${TRAEFIK_HTTP_PORT}:${TRAEFIK_HTTP_PORT}
-        volumes:
-            - /var/run/docker.sock:/var/run/docker.sock
-            - ./traefik/traefik.yml:/etc/traefik/traefik.yml
-        networks:
-            - traefik-network
-            - app-network
+    # traefik:
+    #     image: traefik:v3.3
+    #     environment:
+    #         - HTTP_PORT=${TRAEFIK_HTTP_PORT}
+    #         - HTTPS_PORT=${TRAEFIK_HTTPS_PORT}
+    #         - DASHBOARD_PORT=${TRAEFIK_DASHBOARD_PORT}
+    #     ports:
+    #         - ${TRAEFIK_HTTPS_PORT}:${TRAEFIK_HTTPS_PORT}
+    #         - ${TRAEFIK_DASHBOARD_PORT}:${TRAEFIK_DASHBOARD_PORT}
+    #         - ${TRAEFIK_HTTP_PORT}:${TRAEFIK_HTTP_PORT}
+    #     volumes:
+    #         - /var/run/docker.sock:/var/run/docker.sock
+    #         - ./traefik/traefik.yml:/etc/traefik/traefik.yml
+    #     networks:
+    #         - traefik-network
+    #         - infra-network
 networks:
-    app-network: null
-    traefik-network: null
+    infra-network:
+    traefik-network:
 volumes:
     postgres-data:
     redis-data:

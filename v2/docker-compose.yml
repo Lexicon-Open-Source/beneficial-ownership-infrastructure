@@ -1,3 +1,4 @@
+name: lexicon-bo
 services:
     # crawler-http-service:
     #     build:
